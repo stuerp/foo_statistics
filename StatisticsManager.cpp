@@ -426,10 +426,12 @@ void StatisticsManager::Migrate(metadb_handle_list_cref hTracks) noexcept
                 // Signals all components that the metadata for the specified track has been altered.
                 GetMetaDbIndexManager()->dispatch_refresh(MetaDbGUID, Hash);
             }
+
+            console::print(STR_COMPONENT_BASENAME, " has migrated tags from \"", FilePath, "\".");
         }
         catch (const std::exception & e)
         {
-            console::print(STR_COMPONENT_BASENAME " failed to read tags from \"", FilePath, "\": ", e.what());
+            console::print(STR_COMPONENT_BASENAME " failed to migrate tags from \"", FilePath, "\": ", e.what());
         }
     }
 }
