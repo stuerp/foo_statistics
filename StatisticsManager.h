@@ -54,7 +54,7 @@ public:
 
         uint64_t GetLastPlayedTimestamp() const noexcept
         {
-            return (Timestamps.size() > 2) ? Timestamps.back() : 0;
+            return (Timestamps.size() > 2) ? Timestamps.back() : GetFirstPlayedTimestamp();
         }
 
         uint32_t GetPlaycount() const noexcept
