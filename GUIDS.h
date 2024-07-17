@@ -1,0 +1,11 @@
+
+/** $VER: GUIDs.h (2024.07.16) **/
+
+#include "pch.h"
+
+#pragma once
+
+namespace
+{
+    static constexpr GUID MetaDbGUID = { 0xb7cae3e6, 0x6933, 0x4485, { 0xac, 0x4b, 0x68, 0xc8, 0x4e, 0x49, 0xce, 0x23 } };;
+}
