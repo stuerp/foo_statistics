@@ -1,5 +1,5 @@
 
-/** $VER: MetaDbIOEditCallback.cpp (2024.07.17) **/
+/** $VER: MetaDbIOEditCallback.cpp (2024.07.18) **/
 
 #include "pch.h"
 
@@ -30,7 +30,7 @@ namespace
 
         void on_edited(metadb_handle_list_cref hTracks, t_infosref oldInfos, t_infosref newInfos)
         {
-            hash_list_t NewHashes;
+            hash_list_t TracksToRefresh;
 
             auto Client = MetaDbIndexClient::Instance();
 
@@ -49,19 +49,17 @@ namespace
                     if ((OldHash == NewHash) || !HashSet.emplace(NewHash).second)
                         continue;
 
-                    {
-                        const auto Statistics = StatisticsManager::GetStatistics(OldHash);
+                    const auto Statistics = StatisticsManager::GetStatistics(OldHash);
 
-                        StatisticsManager::SetStatistics(NewHash, Statistics, Transaction);
+                    StatisticsManager::SetStatistics(NewHash, Statistics, Transaction);
 
-                        NewHashes.add_item(NewHash);
-                    }
+                    TracksToRefresh.add_item(NewHash);
                 }
 
                 Transaction->commit();
             }
 
-            StatisticsManager::Refresh(NewHashes);
+            StatisticsManager::Refresh(TracksToRefresh);
         }
     };
 

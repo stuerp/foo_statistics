@@ -1,5 +1,5 @@
 
-/** $VER: PlaybackCallback.cpp (2024.07.17) **/
+/** $VER: PlaybackCallback.cpp (2024.07.18) **/
 
 #include "pch.h"
 
@@ -56,7 +56,7 @@ namespace
         {
             _Configuration._StatisticsUpdated = false;
 
-            _TargetTime = (hTrack->get_length() > 0.) ? std::min(_Configuration.TargetTime, hTrack->get_length() * _Configuration.TargetPercentage) : _Configuration.TargetTime;
+            _ThresholdTime = _Configuration.GetThresholdTime();
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace
         /// </summary>
         virtual void on_playback_time(double time) final
         {
-            if (_Configuration._StatisticsUpdated || (time < _TargetTime))
+            if (_Configuration._StatisticsUpdated || (time < _ThresholdTime))
                 return;
 
             metadb_handle_ptr hTrack;
@@ -134,8 +134,9 @@ namespace
         void PrintProgress() noexcept;
 
     private:
-        double _TargetTime = 0.;
-        titleformat_object::ptr _TitleFormatScript;
+        double _ThresholdTime = 0.;
+
+//      titleformat_object::ptr _TitleFormatScript;
     };
 
     /// <summary>

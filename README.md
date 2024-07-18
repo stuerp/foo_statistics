@@ -3,14 +3,17 @@
 
 [foo_statistics](https://github.com/stuerp/foo_statistics/releases) is a [foobar2000](https://www.foobar2000.org/) component that collects and maintains statistics about tracks in the media library.
 
+It was created because the behavior of the official foo_playcount component changed behavior when it was released as 64-bit.
+
 ## Features
 
+* Configurable tracking pattern
+* Configurable period after which a track is considered 'played': as a number of seconds and as a percentage of the total length of the track.
+* Can import tags from the official foo_playcount component.
 * Collected statistics:
-  * Timestamp when date added to the Media Library
-  * Timestamp first played
-  * Timestamp last played
-  * Playback count
-  * Track Rating
+  * Timestamp when the track gets added to the Media Library
+  * Timestamp each time the track gets played.
+  * Track rating
 * Supports dark mode.
 
 ## Requirements
@@ -32,21 +35,40 @@ or
 
 None
 
-### Tags
+### Metadata
 
-The following metadata tags are available:
+The following metadata is available:
+
+%_added%
+    Timestamp at which the track was added to the Media Library, human readable.
 
 %_added_timestamp%
-    Date/time at which the track was added to the Media Library.
+    Timestamp at which the track was added to the Media Library.
+
+%_first_played%
+    Timestamp at which the track was played the first time, human readable.
 
 %_first_played_timestamp%
-    Date/time at which the track was played the first time.
+    Timestamp at which the track was played the first time.
+
+%_last_played%
+    Timestamp at which the track was played the last time, human readable.
 
 %_last_played_timestamp%
-    Date/time at which the track was played the last time.
+    Timestamp at which the track was played the last time.
 
 %_playcount%
     How many times the track has been played.
+
+%_rating%
+    The track's rating.
+
+### Tags
+
+The following tags are available:
+
+%_timestamps%
+    A semicolon-separate list of the all the timestamps collected. The first entry is the timestamp when the track was added to the media library. The following entries are the timestamps of when the track was played.
 
 %_rating%
     The track's rating.

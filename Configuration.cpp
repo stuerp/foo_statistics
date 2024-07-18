@@ -1,5 +1,5 @@
 
-/** $VER: configuration_t.cpp (2024.07.16) P. Stuer **/
+/** $VER: configuration.cpp (2024.07.18) P. Stuer **/
 
 #include "pch.h"
 
@@ -9,6 +9,7 @@
 
 #include <SDK/file.h>
 #include <SDK/advconfig_impl.h>
+#include <SDK/playback_control.h>
 
 #include <pfc/string_conv.h>
 #include <pfc/string-conv-lite.h>
@@ -57,7 +58,6 @@ void configuration_t::Read(stream_reader * reader, size_t size, abort_callback &
         int32_t Version;
 
         reader->read(&Version, sizeof(Version), abortHandler);
-
     }
     catch (exception & ex)
     {
@@ -81,6 +81,25 @@ void configuration_t::Write(stream_writer * writer, abort_callback & abortHandle
     {
         console::printf(STR_COMPONENT_BASENAME " failed to write configuration: %s", ex.what());
     }
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
+double configuration_t::GetThresholdTime() noexcept
+{
+    if (_ThresholdScript.is_empty())
+        static_api_ptr_t<titleformat_compiler>()->compile_safe_ex(_ThresholdScript, _Configuration.ThresholdFormating);
+
+    auto pbc = playback_control::get();
+
+    pfc::string Result;
+
+    if (!pbc->playback_format_title(nullptr, Result, _ThresholdScript, nullptr, playback_control::display_level_all))
+        return 0.;
+
+    return std::atof(Result);
 }
 
 configuration_t _Configuration;

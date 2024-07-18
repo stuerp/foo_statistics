@@ -1,5 +1,5 @@
 
-/** $VER: FileOperationCallback.cpp (2024.07.16) **/
+/** $VER: FileOperationCallback.cpp (2024.07.18) **/
 
 #include "pch.h"
 
@@ -8,8 +8,6 @@
 #include "StatisticsManager.h"
 
 #include <SDK/file_operation_callback.h>
-
-#include <ranges>
 
 #pragma hdrstop
 
@@ -49,32 +47,35 @@ namespace
         #pragma endregion
 
     private:
-        void OnFileOperation(t_pathlist oldPath, t_pathlist newPath)
+        /// <summary>
+        /// Called whenever an file operation occurs.
+        /// </summary>
+        void OnFileOperation(t_pathlist oldPaths, t_pathlist newPaths)
         {
             if (!_Configuration.LegacyMode)
                 return;
 
-            hash_list_t NewHashes;
+            hash_list_t TracksToRefresh;
 
             auto Client = MetaDbIndexClient::Instance();
 
             auto Transaction = StatisticsManager::GetMetaDbIndexManager()->begin_transaction();
 
-            for (const size_t i : std::views::iota(size_t{}, oldPath.get_count()))
+            for (size_t i = 0; i < oldPaths.get_count(); ++i)
             {
-                const auto OldHash = Client->HashPathName(oldPath[i]);
-                const auto NewHash = Client->HashPathName(newPath[i]);
+                const auto OldHash = Client->HashPathName(oldPaths[i]);
+                const auto NewHash = Client->HashPathName(newPaths[i]);
 
                 const auto Statistics = StatisticsManager::GetStatistics(OldHash);
 
                 StatisticsManager::SetStatistics(NewHash, Statistics, Transaction);
 
-                NewHashes.add_item(NewHash);
+                TracksToRefresh.add_item(NewHash);
             }
 
             Transaction->commit();
 
-            StatisticsManager::Refresh(NewHashes);
+            StatisticsManager::Refresh(TracksToRefresh);
         }
     };
 

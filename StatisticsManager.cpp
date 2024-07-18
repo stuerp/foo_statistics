@@ -1,5 +1,5 @@
 
-/** $VER: StatisticsManager.cpp (2024.07.17) **/
+/** $VER: StatisticsManager.cpp (2024.07.18) **/
 
 #include "pch.h"
 
@@ -123,7 +123,7 @@ void StatisticsManager::SetStatistics(metadb_index_hash hash, const statistics_t
 }
 
 /// <summary>
-/// Gets the hashes of the specified tracks.
+/// Gets the hashes of the specified tracks. Note: The set only contains the unique tracks.
 /// </summary>
 hash_set_t StatisticsManager::GetHashes(metadb_handle_list_cref hTracks) noexcept
 {
@@ -333,9 +333,9 @@ void StatisticsManager::Read(metadb_handle_list_cref hTracks) noexcept
 }
 
 /// <summary>
-/// Migrates the metadata of the official foo_playcount components.
+/// Imports the tags of the official foo_playcount component.
 /// </summary>
-void StatisticsManager::Migrate(metadb_handle_list_cref hTracks) noexcept
+void StatisticsManager::Import(metadb_handle_list_cref hTracks) noexcept
 {
     auto Client = MetaDbIndexClient::Instance();
 
@@ -452,7 +452,7 @@ void StatisticsManager::SetRating(metadb_handle_list_cref hTracks, uint32_t rati
 /// </summary>
 void StatisticsManager::Process(metadb_handle_list_cref hTracks, std::function<void (statistics_t & s)> callback) noexcept
 {
-    hash_list_t HashList;
+    hash_list_t TracksToRefresh;
 
     const auto Hashes = GetHashes(hTracks);
 
@@ -466,21 +466,21 @@ void StatisticsManager::Process(metadb_handle_list_cref hTracks, std::function<v
 
         SetStatistics(Hash, Statistics, Transaction);
 
-        HashList.add_item(Hash);
+        TracksToRefresh.add_item(Hash);
     }
 
     Transaction->commit();
 
-    Refresh(HashList);
+    Refresh(TracksToRefresh);
 }
 
 /// <summary>
 /// Signals all components that the metadata for the specified tracks has been altered.
 /// </summary>
-void StatisticsManager::Refresh(const hash_list_t & hashList)
+void StatisticsManager::Refresh(const hash_list_t & tracksToRefresh)
 {
-    if (hashList.get_count() == 0)
+    if (tracksToRefresh.get_count() == 0)
         return;
 
-    GetMetaDbIndexManager()->dispatch_refresh(MetaDbGUID, hashList);
+    GetMetaDbIndexManager()->dispatch_refresh(MetaDbGUID, tracksToRefresh);
 }

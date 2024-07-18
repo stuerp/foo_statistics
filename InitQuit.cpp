@@ -5,6 +5,7 @@
 
 #include <SDK/initquit.h>
 
+#include "Configuration.h"
 #include "MetaDbIndexClient.h"
 
 #pragma hdrstop

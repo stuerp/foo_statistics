@@ -1,5 +1,5 @@
 
-/** $VER: ContextMenu.cpp (2024.07.17) **/
+/** $VER: ContextMenu.cpp (2024.07.18) **/
 
 #include "pch.h"
 
@@ -28,10 +28,10 @@ namespace
 
     static const menu_item_t MenuItems[] =
     {
-        { "Reset", "Resets the statistics of the selected tracks", ResetGUID },
-        { "Write to tags", "Writes the statistics of the selected tracks to file tags", WriteGUID },
-        { "Read from tags", "Reads the statistics of the selected tracks from file tags", ReadGUID },
-        { "Migrate", "Migrates the foo_playcount tags to statistics", MigrateGUID },
+        { "Reset", "Resets the metadata of the selected tracks.", ResetGUID },
+        { "Write to tags", "Writes the metadata of the selected tracks to file tags.", WriteGUID },
+        { "Read from tags", "Reads the metadata of the selected tracks from file tags.", ReadGUID },
+        { "Import", "Imports the foo_playcount tags as metadata.", MigrateGUID },
     };
 
     static contextmenu_group_popup_factory _ContextMenuGroupPopupFactory(ParentGUID, contextmenu_groups::root, STR_COMPONENT_NAME, 0);
@@ -90,7 +90,7 @@ namespace
 
                 case 3:
                 {
-                    StatisticsManager::Migrate(hTracks);
+                    StatisticsManager::Import(hTracks);
                     break;
                 }
             }
@@ -214,9 +214,9 @@ namespace
                 FB2K_BugCheck();
 
             if (index == 0)
-                out = "Removes the rating from the selected tracks";
+                out = "Removes the rating from the selected tracks.";
             else
-                out = pfc::format("Sets the rating of the selected tracks to ", index);
+                out = pfc::format("Sets the rating of the selected tracks to ", index, ".");
 
             return true;
         }

@@ -128,11 +128,11 @@ public:
     static void Reset(metadb_handle_list_cref hTracks) noexcept;
     static void Write(metadb_handle_list_cref hTracks) noexcept;
     static void Read(metadb_handle_list_cref hTracks) noexcept;
-    static void Migrate(metadb_handle_list_cref hTracks) noexcept;
+    static void Import(metadb_handle_list_cref hTracks) noexcept;
 
     static void SetRating(metadb_handle_list_cref hTracks, uint32_t rating) noexcept;
 
-    static void Refresh(const hash_list_t & hashList);
+    static void Refresh(const hash_list_t & tracksToRefresh);
 
 private:
     static void Process(metadb_handle_list_cref hTracks, std::function<void (statistics_t & s)> callback) noexcept;
