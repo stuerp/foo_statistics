@@ -1,5 +1,5 @@
 
-/** $VER: MetaDbClient.cpp (2024.07.17) **/
+/** $VER: MetaDbClient.cpp (2024.07.18) **/
 
 #include "pch.h"
 
@@ -59,8 +59,6 @@ void MetaDbIndexClient::Initialize() noexcept
     {
         Manager->add(Instance(), MetaDbGUID, _Configuration.RetentionPeriod);
         Manager->dispatch_global_refresh(); // Dispatches a global refresh, asks all components to refresh all tracks. To be calling after adding/removing indexes.
-
-        console::print(STR_COMPONENT_BASENAME " initialised database");
     }
     catch (const std::exception & e)
     {
