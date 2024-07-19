@@ -194,6 +194,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="GUIDS.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Statistics.h" />
     <ClInclude Include="StatisticsManager.h" />
     <ClInclude Include="Resources.h" />
     <ClInclude Include="Tags.h" />

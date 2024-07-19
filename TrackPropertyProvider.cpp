@@ -56,16 +56,16 @@ namespace
 
                 const auto Hash = MetaDbIndexClient::Instance()->transform(Record.info->info(), hTracks[0]->get_location());
 
-                const auto Statistics = StatisticsManager::GetStatistics(Hash);
+                const auto Statistics = statistics_manager_t::GetStatistics(Hash);
 
                 if (Statistics.GetAddedTimestamp() > 0)
-                    callback.set_property(STR_COMPONENT_NAME, 0.0, "Added", StatisticsManager::TimestampToText(Statistics.GetAddedTimestamp()));
+                    callback.set_property(STR_COMPONENT_NAME, 0.0, "Added", statistics_manager_t::TimestampToText(Statistics.GetAddedTimestamp()));
 
                 if (Statistics.GetFirstPlayedTimestamp() > 0)
-                    callback.set_property(STR_COMPONENT_NAME, 1.0, "First Played", StatisticsManager::TimestampToText(Statistics.GetFirstPlayedTimestamp()));
+                    callback.set_property(STR_COMPONENT_NAME, 1.0, "First Played", statistics_manager_t::TimestampToText(Statistics.GetFirstPlayedTimestamp()));
 
                 if (Statistics.GetLastPlayedTimestamp() > 0)
-                    callback.set_property(STR_COMPONENT_NAME, 2.0, "Last Played", StatisticsManager::TimestampToText(Statistics.GetLastPlayedTimestamp()));
+                    callback.set_property(STR_COMPONENT_NAME, 2.0, "Last Played", statistics_manager_t::TimestampToText(Statistics.GetLastPlayedTimestamp()));
 
                 if (Statistics.GetPlaycount() > 0)
                     callback.set_property(STR_COMPONENT_NAME, 3.0, "Playcount", pfc::format_uint(Statistics.GetPlaycount()));
@@ -104,7 +104,7 @@ namespace
                 const auto Hash = Client->transform(Record.info->info(), hTracks[i]->get_location());
 
                 if (Hashes.emplace(Hash).second)
-                    TotalPlaycount += StatisticsManager::GetStatistics(Hash).GetPlaycount();
+                    TotalPlaycount += statistics_manager_t::GetStatistics(Hash).GetPlaycount();
             }
 
             return TotalPlaycount;

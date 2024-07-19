@@ -35,9 +35,9 @@ namespace
             auto Client = MetaDbIndexClient::Instance();
 
             {
-                auto Transaction = StatisticsManager::GetMetaDbIndexManager()->begin_transaction();
+                auto Transaction = statistics_manager_t::GetMetaDbIndexManager()->begin_transaction();
 
-                hash_set_t HashSet;
+                hash_set_t Hashes;
 
                 for (size_t i = 0; i < hTracks.get_count(); ++i)
                 {
@@ -46,12 +46,12 @@ namespace
                     const auto OldHash = Client->transform(*oldInfos[i], Location);
                     const auto NewHash = Client->transform(*newInfos[i], Location);
 
-                    if ((OldHash == NewHash) || !HashSet.emplace(NewHash).second)
+                    if ((OldHash == NewHash) || !Hashes.emplace(NewHash).second)
                         continue;
 
-                    const auto Statistics = StatisticsManager::GetStatistics(OldHash);
+                    const auto Statistics = statistics_manager_t::GetStatistics(OldHash);
 
-                    StatisticsManager::SetStatistics(NewHash, Statistics, Transaction);
+                    statistics_manager_t::PutStatistics(NewHash, Statistics, Transaction);
 
                     TracksToRefresh.add_item(NewHash);
                 }
@@ -59,7 +59,7 @@ namespace
                 Transaction->commit();
             }
 
-            StatisticsManager::Refresh(TracksToRefresh);
+            statistics_manager_t::Refresh(TracksToRefresh);
         }
     };
 

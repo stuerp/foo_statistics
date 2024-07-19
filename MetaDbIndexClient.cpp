@@ -51,7 +51,7 @@ MetaDbIndexClient * MetaDbIndexClient::Instance() noexcept
 /// </summary>
 void MetaDbIndexClient::Initialize() noexcept
 {
-    auto Manager = StatisticsManager::GetMetaDbIndexManager();
+    auto Manager = statistics_manager_t::GetMetaDbIndexManager();
 
 //  Manager->erase_orphaned_data(GUIDs::MetaDbGUID); // Deletes no longer needed index user data files.
 

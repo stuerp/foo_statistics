@@ -72,25 +72,25 @@ namespace
             {
                 case 0:
                 {
-                    StatisticsManager::Reset(hTracks);
+                    statistics_manager_t::Reset(hTracks);
                     break;
                 }
 
                 case 1:
                 {
-                    StatisticsManager::Write(hTracks);
+                    statistics_manager_t::Write(hTracks);
                     break;
                 }
 
                 case 2:
                 {
-                    StatisticsManager::Read(hTracks);
+                    statistics_manager_t::Read(hTracks);
                     break;
                 }
 
                 case 3:
                 {
-                    StatisticsManager::Import(hTracks);
+                    statistics_manager_t::Import(hTracks);
                     break;
                 }
             }
@@ -187,7 +187,7 @@ namespace
             if (index >= _countof(RatingGUIDs))
                 FB2K_BugCheck();
 
-            StatisticsManager::SetRating(hTracks, index);
+            statistics_manager_t::SetRating(hTracks, index);
         }
 
         bool context_get_display(uint32_t index, metadb_handle_list_cref, pfc::string_base & out, uint32_t &, const GUID &) final

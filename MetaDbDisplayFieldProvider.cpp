@@ -81,14 +81,14 @@ namespace
         bool process_field_v2(uint32_t fieldIndex, metadb_handle * hTrack, const metadb_v2::rec_t & record, titleformat_text_out * text) final
         {
             if (fieldIndex < 2)
-                return GetTimestamp(fieldIndex, StatisticsManager::Now(), text, titleformat_inputtypes::unknown);
+                return GetTimestamp(fieldIndex, statistics_manager_t::Now(), text, titleformat_inputtypes::unknown);
 
             if (record.info.is_empty())
                 return false;
 
             const auto Hash = MetaDbIndexClient::Instance()->transform(record.info->info(), hTrack->get_location());
 
-            const auto Statistics = StatisticsManager::GetStatistics(Hash);
+            const auto Statistics = statistics_manager_t::GetStatistics(Hash);
 
             switch (fieldIndex)
             {
@@ -126,7 +126,7 @@ namespace
                 return false;
 
             if (fieldIndex % 2 == 0)
-                text->write(inputType, StatisticsManager::TimestampToText(timestamp));
+                text->write(inputType, statistics_manager_t::TimestampToText(timestamp));
             else
                 text->write(inputType, pfc::format_uint(timestamp));
 

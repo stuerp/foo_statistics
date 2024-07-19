@@ -1,5 +1,5 @@
 
-/** $VER: LibraryCallback.cpp (2024.07.18) **/
+/** $VER: LibraryCallback.cpp (2024.07.19) **/
 
 #include "pch.h"
 
@@ -98,32 +98,16 @@ namespace
 
             // Add statistics to the metadatabase for each of the tracks.
             {
-                const auto & TrackList = TrackArray->as_list_of<metadb_handle>();
+                const auto & hTracks = TrackArray->as_list_of<metadb_handle>();
 
-                hash_list_t TracksToRefresh;
-
-                const auto Now = StatisticsManager::Now();
+                const auto Now = statistics_manager_t::Now();
 
                 try
                 {
-                    auto Transaction = StatisticsManager::GetMetaDbIndexManager()->begin_transaction();
-
-                    const auto Hashes = StatisticsManager::GetHashes(TrackList);
-
-                    for (const auto & Hash : Hashes)
+                    statistics_manager_t::Process(hTracks, [Now](statistics_t & s)
                     {
-                        auto Statistics = StatisticsManager::GetStatistics(Hash);
-
-                        Statistics.SetAddedTimestamp(Now);
-
-                        StatisticsManager::SetStatistics(Hash, Statistics, Transaction);
-
-                        TracksToRefresh.add_item(Hash);
-                    }
-
-                    Transaction->commit();
-
-                    StatisticsManager::Refresh(TracksToRefresh);
+                        s.SetAddedTimestamp(Now);
+                    });
                 }
                 catch (const std::exception & e)
                 {

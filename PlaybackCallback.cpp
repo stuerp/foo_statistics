@@ -117,7 +117,7 @@ namespace
             if (hTrack.is_empty())
                 return;
 
-            StatisticsManager::OnItemPlayed(hTrack);
+            statistics_manager_t::OnItemPlayed(hTrack);
 
             _Configuration._StatisticsUpdated = true;
         }

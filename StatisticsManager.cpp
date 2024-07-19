@@ -1,5 +1,5 @@
 
-/** $VER: StatisticsManager.cpp (2024.07.18) **/
+/** $VER: StatisticsManager.cpp (2024.07.19) **/
 
 #include "pch.h"
 
@@ -24,7 +24,7 @@
 /// <summary>
 /// Gets the singleton instance of the meta database manager.
 /// </summary>
-metadb_index_manager_v2::ptr StatisticsManager::GetMetaDbIndexManager() noexcept
+metadb_index_manager_v2::ptr statistics_manager_t::GetMetaDbIndexManager() noexcept
 {
     static metadb_index_manager_v2 * Singleton = metadb_index_manager_v2::get().detach();
 
@@ -34,7 +34,7 @@ metadb_index_manager_v2::ptr StatisticsManager::GetMetaDbIndexManager() noexcept
 /// <summary>
 /// Called when the specified track should be marked as 'played'.
 /// </summary>
-void StatisticsManager::OnItemPlayed(const metadb_handle_ptr & hTrack) noexcept
+void statistics_manager_t::OnItemPlayed(const metadb_handle_ptr & hTrack) noexcept
 {
     const auto Timestamp = Now();
 
@@ -51,7 +51,7 @@ void StatisticsManager::OnItemPlayed(const metadb_handle_ptr & hTrack) noexcept
         {
             auto Transaction = GetMetaDbIndexManager()->begin_transaction();
 
-            SetStatistics(Hash, Statistics, Transaction);
+            PutStatistics(Hash, Statistics, Transaction);
 
             Transaction->commit();
         }
@@ -62,9 +62,9 @@ void StatisticsManager::OnItemPlayed(const metadb_handle_ptr & hTrack) noexcept
 }
 
 /// <summary>
-/// Gets the statistics with the specified hash.
+/// Gets the statistics from the metadatabase.
 /// </summary>
-StatisticsManager::statistics_t StatisticsManager::GetStatistics(metadb_index_hash hash) noexcept
+statistics_t statistics_manager_t::GetStatistics(metadb_index_hash hash) noexcept
 {
     mem_block_container_impl Data;
 
@@ -106,9 +106,9 @@ StatisticsManager::statistics_t StatisticsManager::GetStatistics(metadb_index_ha
 }
 
 /// <summary>
-/// Sets the statistics.
+/// Puts the statistics in the metadatabase.
 /// </summary>
-void StatisticsManager::SetStatistics(metadb_index_hash hash, const statistics_t & statistics, const metadb_index_transaction::ptr & transaction) noexcept
+void statistics_manager_t::PutStatistics(metadb_index_hash hash, const statistics_t & statistics, const metadb_index_transaction::ptr & transaction) noexcept
 {
     stream_writer_formatter_simple Writer;
 
@@ -123,29 +123,9 @@ void StatisticsManager::SetStatistics(metadb_index_hash hash, const statistics_t
 }
 
 /// <summary>
-/// Gets the hashes of the specified tracks. Note: The set only contains the unique tracks.
-/// </summary>
-hash_set_t StatisticsManager::GetHashes(metadb_handle_list_cref hTracks) noexcept
-{
-    hash_set_t Hashes;
-
-    auto Client = MetaDbIndexClient::Instance();
-
-    for (const auto & hTrack : hTracks)
-    {
-        metadb_index_hash Hash = 0;
-
-        if (Client->hashHandle(hTrack, Hash))
-            Hashes.emplace(Hash);
-    }
-
-    return Hashes;
-}
-
-/// <summary>
 /// Converts the specified timestamp to a string.
 /// </summary>
-pfc::string StatisticsManager::TimestampToText(uint64_t timestamp)
+pfc::string statistics_manager_t::TimestampToText(uint64_t timestamp)
 {
     return pfc::format_filetimestamp(timestamp);
 }
@@ -153,18 +133,25 @@ pfc::string StatisticsManager::TimestampToText(uint64_t timestamp)
 /// <summary>
 /// Resets the metadata of the specified tracks.
 /// </summary>
-void StatisticsManager::Reset(metadb_handle_list_cref hTracks) noexcept
+void statistics_manager_t::Reset(metadb_handle_list_cref hTracks) noexcept
 {
-    StatisticsManager::Process(hTracks, [](statistics_t & s)
+    try
     {
-        s.Reset();
-    });
+        statistics_manager_t::Process(hTracks, [](statistics_t & s)
+        {
+            s.Reset();
+        });
+    }
+    catch (const std::exception & e)
+    {
+        console::print(STR_COMPONENT_BASENAME " failed to reset tracks: ", e.what());
+    }
 }
 
 /// <summary>
 /// Writes the metadata of the specified tracks to file.
 /// </summary>
-void StatisticsManager::Write(metadb_handle_list_cref hTracks) noexcept
+void statistics_manager_t::Write(metadb_handle_list_cref hTracks) noexcept
 {
     auto Client = MetaDbIndexClient::Instance();
 
@@ -195,7 +182,7 @@ void StatisticsManager::Write(metadb_handle_list_cref hTracks) noexcept
 
                     Writer->get_info(SubSongIndex, FileInfo, fb2k::noAbort);
 
-                    const auto Statistics = StatisticsManager::GetStatistics(Hash);
+                    const auto Statistics = statistics_manager_t::GetStatistics(Hash);
 
                     FileInfo.meta_set(TagTimestamps, Statistics.GetTimestamps());
 
@@ -223,7 +210,7 @@ void StatisticsManager::Write(metadb_handle_list_cref hTracks) noexcept
 /// <summary>
 /// Reads the metadata of the specified tracks from file.
 /// </summary>
-void StatisticsManager::Read(metadb_handle_list_cref hTracks) noexcept
+void statistics_manager_t::Read(metadb_handle_list_cref hTracks) noexcept
 {
     auto Client = MetaDbIndexClient::Instance();
 
@@ -239,7 +226,7 @@ void StatisticsManager::Read(metadb_handle_list_cref hTracks) noexcept
 
         try
         {
-            auto Statistics = StatisticsManager::GetStatistics(Hash);
+            auto Statistics = statistics_manager_t::GetStatistics(Hash);
 
             // Required to read from files being currently played. See file_lock_manager documentation for details.
             auto Lock = file_lock_manager::get()->acquire_read(FilePath, fb2k::noAbort);
@@ -249,75 +236,39 @@ void StatisticsManager::Read(metadb_handle_list_cref hTracks) noexcept
 
                 input_entry::g_open_for_info_read(Reader, nullptr, FilePath, fb2k::noAbort);
 
+                file_info_impl FileInfo;
+
+                Reader->get_info(SubSongIndex, FileInfo, fb2k::noAbort);
+
                 // Import the timestamps.
                 {
-                    file_info_impl FileInfo;
-
-                    Reader->get_info(SubSongIndex, FileInfo, fb2k::noAbort);
-
                     Statistics.Timestamps.clear();
 
                     const char * Timestamps = FileInfo.meta_get(TagTimestamps, 0);
 
                     if (Timestamps != nullptr)
                         Statistics.SetTimestamps(Timestamps);
+                }
+
+                // Import the rating.
+                {
+                    const char * Value = FileInfo.meta_get(TagRating, 0);
+
+                    if (Value != nullptr)
+                    {
+                        uint32_t Rating = (uint32_t) std::atoi(Value);
+
+                        Statistics.Rating = (errno != ERANGE) ? Rating : 0;
+                    }
                     else
-                    {
-                        /* Try to import from the tags of the official foo_playcount component. */
-
-                        // Import the Added timestamp.
-                        const char * Value = FileInfo.meta_get(TagAddedTimestamp, 0);
-
-                        if (Value != nullptr)
-                        {
-                            uint64_t Timestamp = (uint64_t) ::_atoi64(Value);
-
-                            Statistics.SetAddedTimestamp((errno != ERANGE) ? Timestamp : 0);
-
-                            // Import the First Played timestamp.
-                            Value = FileInfo.meta_get(TagFirstPlayedTimestamp, 0);
-
-                            if (Value != nullptr)
-                            {
-                                Timestamp = (uint64_t) ::_atoi64(Value);
-
-                                if (errno != ERANGE)
-                                {
-                                    Statistics.Timestamps.push_back(Timestamp);
-
-                                    // Import the Last Played timestamp.
-                                    Value = FileInfo.meta_get(TagLastPlayedTimestamp, 0);
-
-                                    if (Value != nullptr)
-                                    {
-                                        Timestamp = (uint64_t) ::_atoi64(Value);
-
-                                        if (errno != ERANGE)
-                                            Statistics.Timestamps.push_back(Timestamp);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // Import the rating.
-                    {
-                        const char * Value = FileInfo.meta_get(TagRating, 0);
-
-                        if (Value != nullptr)
-                        {
-                            uint32_t Rating = (uint32_t) std::atoi(Value);
-
-                            Statistics.Rating = (errno != ERANGE) ? Rating : 0;
-                        }
-                    }
+                        Statistics.Rating = 0;
                 }
             }
 
             {
                 auto Transaction = GetMetaDbIndexManager()->begin_transaction();
 
-                SetStatistics(Hash, Statistics, Transaction);
+                PutStatistics(Hash, Statistics, Transaction);
 
                 Transaction->commit();
 
@@ -335,7 +286,7 @@ void StatisticsManager::Read(metadb_handle_list_cref hTracks) noexcept
 /// <summary>
 /// Imports the tags of the official foo_playcount component.
 /// </summary>
-void StatisticsManager::Import(metadb_handle_list_cref hTracks) noexcept
+void statistics_manager_t::Import(metadb_handle_list_cref hTracks) noexcept
 {
     auto Client = MetaDbIndexClient::Instance();
 
@@ -368,25 +319,25 @@ void StatisticsManager::Import(metadb_handle_list_cref hTracks) noexcept
                 // Import the timestamps.
                 {
                     // Import the Added timestamp.
-                    uint64_t Timestamp = (uint64_t) StatisticsManager::GetNumber(FileInfo, "added_timestamp");
+                    uint64_t Timestamp = (uint64_t) statistics_manager_t::GetNumber(FileInfo, "added_timestamp");
 
                     if (Timestamp != 0)
                     {
                         Statistics.SetAddedTimestamp(Timestamp);
 
                         // Import the First Played timestamp.
-                        uint64_t FirstPlayed = (uint64_t) StatisticsManager::GetNumber(FileInfo, "first_played_timestamp");
+                        uint64_t FirstPlayed = (uint64_t) statistics_manager_t::GetNumber(FileInfo, "first_played_timestamp");
 
                         if (FirstPlayed != 0)
                         {
                             Statistics.Timestamps.push_back(FirstPlayed);
 
-                            uint64_t Playcount = (uint64_t) StatisticsManager::GetNumber(FileInfo, "play_count");
+                            uint64_t Playcount = (uint64_t) statistics_manager_t::GetNumber(FileInfo, "play_count");
 
                             if (Playcount > 1)
                             {
                                 // Import the Last Played timestamp.
-                                uint64_t LastPlayed = (uint64_t) StatisticsManager::GetNumber(FileInfo, "last_played_timestamp");
+                                uint64_t LastPlayed = (uint64_t) statistics_manager_t::GetNumber(FileInfo, "last_played_timestamp");
 
                                 if (LastPlayed != 0)
                                 {
@@ -413,13 +364,13 @@ void StatisticsManager::Import(metadb_handle_list_cref hTracks) noexcept
                 }
 
                 // Import the rating.
-                Statistics.Rating = (uint32_t) StatisticsManager::GetNumber(FileInfo, "rating");
+                Statistics.Rating = (uint32_t) statistics_manager_t::GetNumber(FileInfo, "rating");
             }
 
             {
                 auto Transaction = GetMetaDbIndexManager()->begin_transaction();
 
-                SetStatistics(Hash, Statistics, Transaction);
+                PutStatistics(Hash, Statistics, Transaction);
 
                 Transaction->commit();
 
@@ -439,32 +390,48 @@ void StatisticsManager::Import(metadb_handle_list_cref hTracks) noexcept
 /// <summary>
 /// Sets the rating of the specfied tracks.
 /// </summary>
-void StatisticsManager::SetRating(metadb_handle_list_cref hTracks, uint32_t rating) noexcept
+void statistics_manager_t::SetRating(metadb_handle_list_cref hTracks, uint32_t rating) noexcept
 {
-    StatisticsManager::Process(hTracks, [rating](statistics_t & s)
+    try
     {
-        s.Rating = rating;
-    });
+        statistics_manager_t::Process(hTracks, [rating](statistics_t & s)
+        {
+            s.Rating = rating;
+        });
+    }
+    catch (const std::exception & e)
+    {
+        console::print(STR_COMPONENT_BASENAME " failed to set rating of tracks: ", e.what());
+    }
 }
 
 /// <summary>
 /// Processes the specfied tracks.
 /// </summary>
-void StatisticsManager::Process(metadb_handle_list_cref hTracks, std::function<void (statistics_t & s)> callback) noexcept
+void statistics_manager_t::Process(metadb_handle_list_cref hTracks, std::function<void (statistics_t & s)> callback)
 {
-    hash_list_t TracksToRefresh;
+    auto Client = MetaDbIndexClient::Instance();
 
-    const auto Hashes = GetHashes(hTracks);
+    hash_list_t TracksToRefresh;
+    hash_set_t Hashes;
 
     auto Transaction = GetMetaDbIndexManager()->begin_transaction();
 
-    for (const auto & Hash : Hashes)
+    for (const auto & hTrack : hTracks)
     {
+        metadb_index_hash Hash = 0;
+
+        if (!Client->hashHandle(hTrack, Hash))
+            continue;
+
+        if (!Hashes.emplace(Hash).second) // Only process unique tracks.
+            continue;
+
         statistics_t Statistics = GetStatistics(Hash);
 
         callback(Statistics);
 
-        SetStatistics(Hash, Statistics, Transaction);
+        PutStatistics(Hash, Statistics, Transaction);
 
         TracksToRefresh.add_item(Hash);
     }
@@ -477,7 +444,7 @@ void StatisticsManager::Process(metadb_handle_list_cref hTracks, std::function<v
 /// <summary>
 /// Signals all components that the metadata for the specified tracks has been altered.
 /// </summary>
-void StatisticsManager::Refresh(const hash_list_t & tracksToRefresh)
+void statistics_manager_t::Refresh(const hash_list_t & tracksToRefresh)
 {
     if (tracksToRefresh.get_count() == 0)
         return;

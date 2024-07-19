@@ -84,9 +84,8 @@ void configuration_t::Write(stream_writer * writer, abort_callback & abortHandle
 }
 
 /// <summary>
-/// 
+/// Gets the threshold time after which a track is considered 'played' (in seconds).
 /// </summary>
-/// <returns></returns>
 double configuration_t::GetThresholdTime() noexcept
 {
     if (_ThresholdScript.is_empty())

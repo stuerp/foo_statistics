@@ -59,23 +59,23 @@ namespace
 
             auto Client = MetaDbIndexClient::Instance();
 
-            auto Transaction = StatisticsManager::GetMetaDbIndexManager()->begin_transaction();
+            auto Transaction = statistics_manager_t::GetMetaDbIndexManager()->begin_transaction();
 
             for (size_t i = 0; i < oldPaths.get_count(); ++i)
             {
                 const auto OldHash = Client->HashPathName(oldPaths[i]);
                 const auto NewHash = Client->HashPathName(newPaths[i]);
 
-                const auto Statistics = StatisticsManager::GetStatistics(OldHash);
+                const auto Statistics = statistics_manager_t::GetStatistics(OldHash);
 
-                StatisticsManager::SetStatistics(NewHash, Statistics, Transaction);
+                statistics_manager_t::PutStatistics(NewHash, Statistics, Transaction);
 
                 TracksToRefresh.add_item(NewHash);
             }
 
             Transaction->commit();
 
-            StatisticsManager::Refresh(TracksToRefresh);
+            statistics_manager_t::Refresh(TracksToRefresh);
         }
     };
 
