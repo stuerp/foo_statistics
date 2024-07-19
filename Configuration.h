@@ -32,7 +32,7 @@ public:
     t_filetimestamp RetentionPeriod = system_time_periods::week * 4;
 
     pfc::string PinTo = "%album artist%|%album%|%subtitle%|%publisher%|%album country%|%album released%|%album recorded%|%tracknumber%|%title%|%featuring%|%remix%|%artist%|%date%"; // "%path%|%subsong%"
-    pfc::string ThresholdFormating = "$if(%length_seconds%, $min($div(%length_seconds%, 2), 30),)";
+    pfc::string ThresholdFormat = "$if(%length_seconds%, $min($div(%length_seconds%, 2), 30),)";
 
     bool _StatisticsUpdated = false; // True if the statistics for the playing item has been updated.
 

@@ -90,7 +90,7 @@ void configuration_t::Write(stream_writer * writer, abort_callback & abortHandle
 double configuration_t::GetThresholdTime() noexcept
 {
     if (_ThresholdScript.is_empty())
-        static_api_ptr_t<titleformat_compiler>()->compile_safe_ex(_ThresholdScript, _Configuration.ThresholdFormating);
+        static_api_ptr_t<titleformat_compiler>()->compile_safe_ex(_ThresholdScript, _Configuration.ThresholdFormat);
 
     auto pbc = playback_control::get();
 
