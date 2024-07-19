@@ -388,6 +388,26 @@ void statistics_manager_t::Import(metadb_handle_list_cref hTracks) noexcept
 }
 
 /// <summary>
+/// Marks the specified tracks as played.
+/// </summary>
+void statistics_manager_t::MarkAsPlayed(metadb_handle_list_cref hTracks) noexcept
+{
+    try
+    {
+        const auto Timestamp = Now();
+
+        statistics_manager_t::Process(hTracks, [Timestamp](statistics_t & s)
+        {
+            s.Timestamps.push_back(Timestamp);
+        });
+    }
+    catch (const std::exception & e)
+    {
+        console::print(STR_COMPONENT_BASENAME " failed to set rating of tracks: ", e.what());
+    }
+}
+
+/// <summary>
 /// Sets the rating of the specfied tracks.
 /// </summary>
 void statistics_manager_t::SetRating(metadb_handle_list_cref hTracks, uint32_t rating) noexcept

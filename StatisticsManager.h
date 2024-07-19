@@ -34,6 +34,7 @@ public:
     static void Write(metadb_handle_list_cref hTracks) noexcept;
     static void Read(metadb_handle_list_cref hTracks) noexcept;
     static void Import(metadb_handle_list_cref hTracks) noexcept;
+    static void MarkAsPlayed(metadb_handle_list_cref hTracks) noexcept;
 
     static void SetRating(metadb_handle_list_cref hTracks, uint32_t rating) noexcept;
 

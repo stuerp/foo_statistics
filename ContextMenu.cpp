@@ -25,6 +25,7 @@ namespace
     static const GUID WriteGUID     = {0xfcad381f,0x457a,0x44e1,{0xa1,0xe3,0x43,0x04,0x40,0x21,0x9d,0x07}}; // {fcad381f-457a-44e1-a1e3-430440219d07}
     static const GUID ReadGUID      = {0xafcbe911,0x9e04,0x4ea6,{0xa7,0x96,0xb3,0xe7,0x30,0x5f,0x4b,0xa1}}; // {afcbe911-9e04-4ea6-a796-b3e7305f4ba1}
     static const GUID MigrateGUID   = {0x2e0319a1,0xc5b1,0x444b,{0x8a,0x20,0xef,0xbc,0x45,0x54,0x70,0x3c}}; // {2e0319a1-c5b1-444b-8a20-efbc4554703c}
+    static const GUID MarkGUID      = {0x8fe6aad8,0x558e,0x455b,{0x85,0x07,0xac,0xd7,0x71,0xf1,0x47,0xe4}};
 
     static const menu_item_t MenuItems[] =
     {
@@ -32,6 +33,7 @@ namespace
         { "Write to tags", "Writes the metadata of the selected tracks to file tags.", WriteGUID },
         { "Read from tags", "Reads the metadata of the selected tracks from file tags.", ReadGUID },
         { "Import", "Imports the foo_playcount tags as metadata.", MigrateGUID },
+        { "Mark as played", "Marks the selected tracks as played.", MarkGUID },
     };
 
     static contextmenu_group_popup_factory _ContextMenuGroupPopupFactory(ParentGUID, contextmenu_groups::root, STR_COMPONENT_NAME, 0);
@@ -91,6 +93,12 @@ namespace
                 case 3:
                 {
                     statistics_manager_t::Import(hTracks);
+                    break;
+                }
+
+                case 4:
+                {
+                    statistics_manager_t::MarkAsPlayed(hTracks);
                     break;
                 }
             }
