@@ -1,5 +1,5 @@
 
-/** $VER: configuration.cpp (2024.07.18) P. Stuer **/
+/** $VER: configuration.cpp (2024.07.22) P. Stuer **/
 
 #include "pch.h"
 
@@ -10,15 +10,6 @@
 #include <SDK/file.h>
 #include <SDK/advconfig_impl.h>
 #include <SDK/playback_control.h>
-
-#include <pfc/string_conv.h>
-#include <pfc/string-conv-lite.h>
-
-using namespace pfc;
-using namespace stringcvt;
-
-#include <pathcch.h>
-#pragma comment(lib, "pathcch")
 
 #pragma hdrstop
 
@@ -35,6 +26,13 @@ configuration_t::configuration_t()
 /// </summary>
 void configuration_t::Reset() noexcept
 {
+    _PinTo = "%album artist%|%album%|%subtitle%|%publisher%|%album country%|%album released%|%album recorded%|%tracknumber%|%title%|%featuring%|%remix%|%artist%|%date%"; // "%path%|%subsong%"
+    _ThresholdFormat = "$if(%length_seconds%, $min($div(%length_seconds%, 2), 30),)";
+
+    _RetentionValue = 4.;
+    _RetentionUnit = RetentionUnit::Weeks;
+
+    _WriteToTags = WriteToTags::Always;
 }
 
 /// <summary>
@@ -42,45 +40,7 @@ void configuration_t::Reset() noexcept
 /// </summary>
 configuration_t & configuration_t::operator=(const configuration_t & other)
 {
- 
-    return *this;
-}
-
-/// <summary>
-/// Reads this instance with the specified reader.
-/// </summary>
-void configuration_t::Read(stream_reader * reader, size_t size, abort_callback & abortHandler) noexcept
-{
-    Reset();
-
-    try
-    {
-        int32_t Version;
-
-        reader->read(&Version, sizeof(Version), abortHandler);
-    }
-    catch (exception & ex)
-    {
-        console::printf(STR_COMPONENT_BASENAME " failed to read configuration: %s", ex.what());
-
-        Reset();
-    }
-}
-
-/// <summary>
-/// Writes this instance to the specified writer.
-/// </summary>
-void configuration_t::Write(stream_writer * writer, abort_callback & abortHandler) const noexcept
-{
-    try
-    {
-        writer->write_object_t(_CurrentVersion, abortHandler);
-
-    }
-    catch (exception & ex)
-    {
-        console::printf(STR_COMPONENT_BASENAME " failed to write configuration: %s", ex.what());
-    }
+     return *this;
 }
 
 /// <summary>
@@ -89,7 +49,7 @@ void configuration_t::Write(stream_writer * writer, abort_callback & abortHandle
 double configuration_t::GetThresholdTime() noexcept
 {
     if (_ThresholdScript.is_empty())
-        static_api_ptr_t<titleformat_compiler>()->compile_safe_ex(_ThresholdScript, _Configuration.ThresholdFormat);
+        static_api_ptr_t<titleformat_compiler>()->compile_safe_ex(_ThresholdScript, _Configuration._ThresholdFormat);
 
     auto pbc = playback_control::get();
 
@@ -99,6 +59,24 @@ double configuration_t::GetThresholdTime() noexcept
         return 0.;
 
     return std::atof(Result);
+}
+
+/// <summary>
+/// Gets the retention period.
+/// </summary>
+t_filetimestamp configuration_t::GetRetentionPeriod() noexcept
+{
+    #pragma warning(disable: 4061 4062)
+    switch (_RetentionUnit)
+    {
+        case RetentionUnit::Seconds: return (t_filetimestamp)(_Configuration._RetentionValue * system_time_periods::second);
+        case RetentionUnit::Minutes: return (t_filetimestamp)(_Configuration._RetentionValue * system_time_periods::minute);
+        case RetentionUnit::Hours:   return (t_filetimestamp)(_Configuration._RetentionValue * system_time_periods::hour);
+        case RetentionUnit::Days:    return (t_filetimestamp)(_Configuration._RetentionValue * system_time_periods::day);
+
+        default:
+        case RetentionUnit::Weeks:   return (t_filetimestamp)(_Configuration._RetentionValue * system_time_periods::week);
+    }
 }
 
 configuration_t _Configuration;

@@ -1,5 +1,5 @@
 ﻿
-/** $VER: Configuration.h (2024.07.18) P. Stuer **/
+/** $VER: Configuration.h (2024.07.22) P. Stuer **/
 
 #pragma once
 
@@ -7,6 +7,23 @@
 
 #include <SDK/titleformat.h>
 #include <SDK/system_time_keeper.h>
+
+enum RetentionUnit : uint32_t
+{
+    Seconds = 0,
+    Minutes = 1,
+    Hours = 2,
+    Days = 3,
+    Weeks = 4,
+
+    Count,
+};
+
+enum WriteToTags : uint32_t
+{
+    Never = 0,
+    Always = ~0U
+};
 
 /// <summary>
 /// Represents the configuration of the component.
@@ -22,19 +39,21 @@ public:
 
     void Reset() noexcept;
 
-    void Read(stream_reader * reader, size_t size, abort_callback & abortHandler = fb2k::noAbort) noexcept;
-    void Write(stream_writer * writer, abort_callback & abortHandler = fb2k::noAbort) const noexcept;
-
     double GetThresholdTime() noexcept;
+    t_filetimestamp GetRetentionPeriod() noexcept;
 
 public:
-    bool LegacyMode = false;
-    t_filetimestamp RetentionPeriod = system_time_periods::week * 4;
+    pfc::string _PinTo = "%album artist%|%album%|%subtitle%|%publisher%|%album country%|%album released%|%album recorded%|%tracknumber%|%title%|%featuring%|%remix%|%artist%|%date%"; // "%path%|%subsong%"
+    pfc::string _ThresholdFormat = "$if(%length_seconds%, $min($div(%length_seconds%, 2), 30),)";
 
-    pfc::string PinTo = "%album artist%|%album%|%subtitle%|%publisher%|%album country%|%album released%|%album recorded%|%tracknumber%|%title%|%featuring%|%remix%|%artist%|%date%"; // "%path%|%subsong%"
-    pfc::string ThresholdFormat = "$if(%length_seconds%, $min($div(%length_seconds%, 2), 30),)";
+    double _RetentionValue = 4.;
+    RetentionUnit _RetentionUnit = RetentionUnit::Weeks;
 
-    bool _StatisticsUpdated = false; // True if the statistics for the playing item has been updated.
+    WriteToTags _WriteToTags = WriteToTags::Always;
+
+    t_filetimestamp _RetentionPeriod = system_time_periods::week * 4;
+
+    bool _StatisticsUpdated = false; // True if the statistics for the playing item have been updated.
 
 private:
     titleformat_object::ptr _ThresholdScript;

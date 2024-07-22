@@ -1,5 +1,5 @@
 
-/** $VER: Resources.rc (2023.08.28) P. Stuer **/
+/** $VER: Resources.rc (2024.07.22) P. Stuer **/
 
 #include "Resources.h"
 
@@ -42,4 +42,23 @@ filesubtype     VFT2_UNKNOWN
     {
         value "Translation", 0x409, 1252    // U.S. English, Multilingual character set
     }
+}
+
+#include "PreferencesLayout.h"
+
+IDD_PREFERENCES dialogex 0, 0, 0, 0
+style DS_SETFONT | WS_CHILD
+font 8, "Segoe UI", 400, 0, 1
+{
+    rtext       "Pin to:",                          IDC_STATIC,             X_A11, Y_A11 + 2, W_A11, H_A11
+    edittext                                        IDC_PIN_TO,             X_A12, Y_A12,     W_A12, H_A12, ES_AUTOHSCROLL
+
+    rtext       "Consider as played after:",        IDC_STATIC,             X_A13, Y_A13 + 2, W_A13, H_A13
+    edittext                                        IDC_THRESHOLD_FORMAT,   X_A14, Y_A14,     W_A14, H_A14, ES_AUTOHSCROLL
+
+    rtext       "Retention period:",                IDC_STATIC,             X_A20, Y_A20 + 2, W_A20, H_A20
+    edittext                                        IDC_RETENTION_VALUE,    X_A21, Y_A21,     W_A21, H_A21, ES_RIGHT | ES_AUTOHSCROLL | WS_TABSTOP
+    combobox                                        IDC_RETENTION_UNIT,     X_A22, Y_A22,     W_A22, H_A22, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+
+    control     "Write statistics to tags",         IDC_WRITE_TO_TAGS, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, X_A50, Y_A50, W_A50, H_A50
 }

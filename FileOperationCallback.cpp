@@ -1,5 +1,5 @@
 
-/** $VER: FileOperationCallback.cpp (2024.07.18) **/
+/** $VER: FileOperationCallback.cpp (2024.07.22) **/
 
 #include "pch.h"
 
@@ -32,7 +32,7 @@ namespace
 
         void on_files_copied_sorted(t_pathlist from, t_pathlist to) final
         {
-            OnFileOperation(from, to);
+//          OnFileOperation(from, to);
         }
 
         void on_files_deleted_sorted(t_pathlist) final
@@ -41,7 +41,7 @@ namespace
 
         void on_files_moved_sorted(t_pathlist from, t_pathlist to) final
         {
-            OnFileOperation(from, to);
+//          OnFileOperation(from, to);
         }
 
         #pragma endregion
@@ -52,9 +52,6 @@ namespace
         /// </summary>
         void OnFileOperation(t_pathlist oldPaths, t_pathlist newPaths)
         {
-            if (!_Configuration.LegacyMode)
-                return;
-
             hash_list_t TracksToRefresh;
 
             auto Client = MetaDbIndexClient::Instance();

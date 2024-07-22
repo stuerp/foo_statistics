@@ -15,7 +15,7 @@
 /// </summary>
 MetaDbIndexClient::MetaDbIndexClient() : _Hasher(hasher_md5::get())
 {
-    titleformat_compiler::get()->compile_safe(_PinToScript, _Configuration.PinTo);
+    titleformat_compiler::get()->compile_safe(_PinToScript, _Configuration._PinTo);
 }
 
 #pragma region metadb_index_client
@@ -57,7 +57,7 @@ void MetaDbIndexClient::Initialize() noexcept
 
     try
     {
-        Manager->add(Instance(), MetaDbGUID, _Configuration.RetentionPeriod);
+        Manager->add(Instance(), MetaDbGUID, _Configuration._RetentionPeriod);
         Manager->dispatch_global_refresh(); // Dispatches a global refresh, asks all components to refresh all tracks. To be calling after adding/removing indexes.
     }
     catch (const std::exception & e)
