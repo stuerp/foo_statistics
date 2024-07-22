@@ -1,5 +1,5 @@
 
-/** $VER: StatisticsManager.cpp (2024.07.19) **/
+/** $VER: StatisticsManager.cpp (2024.07.22) **/
 
 #include "pch.h"
 
@@ -36,6 +36,7 @@ metadb_index_manager_v2::ptr statistics_manager_t::GetMetaDbIndexManager() noexc
 /// </summary>
 void statistics_manager_t::OnItemPlayed(const metadb_handle_ptr & hTrack) noexcept
 {
+/*
     const auto Timestamp = Now();
 
     metadb_index_hash Hash = 0;
@@ -56,9 +57,18 @@ void statistics_manager_t::OnItemPlayed(const metadb_handle_ptr & hTrack) noexce
             Transaction->commit();
         }
 
+        if (_Configuration._WriteToTags)
+            Write(hTrack);
+
         // Signals all components that the metadata for the specified track has been altered.
         GetMetaDbIndexManager()->dispatch_refresh(MetaDbGUID, Hash);
     }
+*/
+    metadb_handle_list_t Tracks;
+
+    Tracks += hTrack;
+
+    MarkAsPlayed(Tracks);
 }
 
 /// <summary>
@@ -149,7 +159,19 @@ void statistics_manager_t::Reset(metadb_handle_list_cref hTracks) noexcept
 }
 
 /// <summary>
-/// Writes the metadata of the specified tracks to file.
+/// Writes the metadata of the specified track to file tags.
+/// </summary>
+void statistics_manager_t::WriteTrack(const metadb_handle_ptr & hTrack) noexcept
+{
+    metadb_handle_list_t Tracks;
+
+    Tracks += hTrack;
+
+    Write(Tracks);
+}
+
+/// <summary>
+/// Writes the metadata of the specified tracks to file tags.
 /// </summary>
 void statistics_manager_t::Write(metadb_handle_list_cref hTracks) noexcept
 {
@@ -208,7 +230,7 @@ void statistics_manager_t::Write(metadb_handle_list_cref hTracks) noexcept
 }
 
 /// <summary>
-/// Reads the metadata of the specified tracks from file.
+/// Reads the metadata of the specified tracks from file tags.
 /// </summary>
 void statistics_manager_t::Read(metadb_handle_list_cref hTracks) noexcept
 {
@@ -403,7 +425,7 @@ void statistics_manager_t::MarkAsPlayed(metadb_handle_list_cref hTracks) noexcep
     }
     catch (const std::exception & e)
     {
-        console::print(STR_COMPONENT_BASENAME " failed to set rating of tracks: ", e.what());
+        console::print(STR_COMPONENT_BASENAME " failed to mark ", hTracks.size(), " tracks as played: ", e.what());
     }
 }
 
@@ -457,6 +479,9 @@ void statistics_manager_t::Process(metadb_handle_list_cref hTracks, std::functio
     }
 
     Transaction->commit();
+
+    if (_Configuration._WriteToTags)
+        Write(hTracks);
 
     Refresh(TracksToRefresh);
 }

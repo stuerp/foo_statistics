@@ -1,5 +1,5 @@
 
-/** $VER: ContextMenu.cpp (2024.07.18) **/
+/** $VER: ContextMenu.cpp (2024.07.22) **/
 
 #include "pch.h"
 
@@ -17,23 +17,26 @@ namespace
         const char * Text;
         const char * Description;
         GUID Id;
+        std::function<void (metadb_handle_list_cref s)> Handler;
     };
 
     static const GUID ParentGUID    = {0x68452aaa,0x3b65,0x46c1,{0x86,0xa2,0xa6,0xc3,0x0d,0xb4,0x6d,0x57}}; // {68452aaa-3b65-46c1-86a2-a6c30db46d57}
 
-    static const GUID ResetGUID     = {0x15d5e249,0x1b69,0x4ad1,{0xab,0x6f,0xd1,0xcb,0xa5,0x39,0x1d,0x3f}}; // {15d5e249-1b69-4ad1-ab6f-d1cba5391d3f}
+    static const GUID MarkGUID      = {0x8fe6aad8,0x558e,0x455b,{0x85,0x07,0xac,0xd7,0x71,0xf1,0x47,0xe4}};
     static const GUID WriteGUID     = {0xfcad381f,0x457a,0x44e1,{0xa1,0xe3,0x43,0x04,0x40,0x21,0x9d,0x07}}; // {fcad381f-457a-44e1-a1e3-430440219d07}
     static const GUID ReadGUID      = {0xafcbe911,0x9e04,0x4ea6,{0xa7,0x96,0xb3,0xe7,0x30,0x5f,0x4b,0xa1}}; // {afcbe911-9e04-4ea6-a796-b3e7305f4ba1}
-    static const GUID MigrateGUID   = {0x2e0319a1,0xc5b1,0x444b,{0x8a,0x20,0xef,0xbc,0x45,0x54,0x70,0x3c}}; // {2e0319a1-c5b1-444b-8a20-efbc4554703c}
-    static const GUID MarkGUID      = {0x8fe6aad8,0x558e,0x455b,{0x85,0x07,0xac,0xd7,0x71,0xf1,0x47,0xe4}};
+    static const GUID ImportGUID    = {0x2e0319a1,0xc5b1,0x444b,{0x8a,0x20,0xef,0xbc,0x45,0x54,0x70,0x3c}}; // {2e0319a1-c5b1-444b-8a20-efbc4554703c}
+    static const GUID ResetGUID     = {0x15d5e249,0x1b69,0x4ad1,{0xab,0x6f,0xd1,0xcb,0xa5,0x39,0x1d,0x3f}}; // {15d5e249-1b69-4ad1-ab6f-d1cba5391d3f}
 
     static const menu_item_t MenuItems[] =
     {
-        { "Reset", "Resets the metadata of the selected tracks.", ResetGUID },
-        { "Write to tags", "Writes the metadata of the selected tracks to file tags.", WriteGUID },
-        { "Read from tags", "Reads the metadata of the selected tracks from file tags.", ReadGUID },
-        { "Import", "Imports the foo_playcount tags as metadata.", MigrateGUID },
-        { "Mark as played", "Marks the selected tracks as played.", MarkGUID },
+        { "Mark as played", "Marks the selected tracks as played.", MarkGUID, statistics_manager_t::MarkAsPlayed },
+
+        { "Write to tags", "Writes the metadata of the selected tracks to file tags.", WriteGUID, statistics_manager_t::Write },
+        { "Read from tags", "Reads the metadata of the selected tracks from file tags.", ReadGUID, statistics_manager_t::Read },
+        { "Import", "Imports the foo_playcount tags as metadata.", ImportGUID, statistics_manager_t::Import },
+
+        { "Reset", "Resets the metadata of the selected tracks.", ResetGUID, statistics_manager_t::Reset },
     };
 
     static contextmenu_group_popup_factory _ContextMenuGroupPopupFactory(ParentGUID, contextmenu_groups::root, STR_COMPONENT_NAME, 0);
@@ -70,38 +73,10 @@ namespace
 
         void context_command(uint32_t index, metadb_handle_list_cref hTracks, const GUID &) final
         {
-            switch (index)
-            {
-                case 0:
-                {
-                    statistics_manager_t::Reset(hTracks);
-                    break;
-                }
+            if (index >= _countof(MenuItems))
+                FB2K_BugCheck();
 
-                case 1:
-                {
-                    statistics_manager_t::Write(hTracks);
-                    break;
-                }
-
-                case 2:
-                {
-                    statistics_manager_t::Read(hTracks);
-                    break;
-                }
-
-                case 3:
-                {
-                    statistics_manager_t::Import(hTracks);
-                    break;
-                }
-
-                case 4:
-                {
-                    statistics_manager_t::MarkAsPlayed(hTracks);
-                    break;
-                }
-            }
+            MenuItems[index].Handler(hTracks);
         }
 
         bool context_get_display(uint32_t index, metadb_handle_list_cref, pfc::string_base & out, uint32_t &, const GUID &) final

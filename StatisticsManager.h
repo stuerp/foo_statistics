@@ -41,6 +41,8 @@ public:
     static void Process(metadb_handle_list_cref hTracks, std::function<void (statistics_t & s)> callback);
     static void Refresh(const hash_list_t & tracksToRefresh);
 
+    static void WriteTrack(const metadb_handle_ptr & hTrack) noexcept;
+
 private:
     static int64_t GetNumber(file_info_impl & fileInfo, const char * name) noexcept
     {

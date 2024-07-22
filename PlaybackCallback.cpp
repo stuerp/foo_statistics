@@ -1,5 +1,5 @@
 
-/** $VER: PlaybackCallback.cpp (2024.07.18) **/
+/** $VER: PlaybackCallback.cpp (2024.07.22) **/
 
 #include "pch.h"
 
@@ -11,6 +11,8 @@
 #include "StatisticsManager.h"
 
 #include <math.h>
+
+#include <queue>
 
 #pragma hdrstop
 
@@ -54,8 +56,7 @@ namespace
         /// </summary>
         virtual void on_playback_new_track(metadb_handle_ptr hTrack) final
         {
-            _Configuration._StatisticsUpdated = false;
-
+            _StatisticsUpdated = false;
             _ThresholdTime = _Configuration.GetThresholdTime();
         }
 
@@ -107,7 +108,7 @@ namespace
         /// </summary>
         virtual void on_playback_time(double time) final
         {
-            if (_Configuration._StatisticsUpdated || (time < _ThresholdTime))
+            if (_StatisticsUpdated || (time < _ThresholdTime))
                 return;
 
             metadb_handle_ptr hTrack;
@@ -119,7 +120,7 @@ namespace
 
             statistics_manager_t::OnItemPlayed(hTrack);
 
-            _Configuration._StatisticsUpdated = true;
+            _StatisticsUpdated = true;
         }
 
         /// <summary>
@@ -134,7 +135,9 @@ namespace
         void PrintProgress() noexcept;
 
     private:
+        bool _StatisticsUpdated = false; // True if the statistics for the playing item have been updated.
         double _ThresholdTime = 0.;
+        std::queue<metadb_handle_ptr> _TracksToPersist;
 
 //      titleformat_object::ptr _TitleFormatScript;
     };

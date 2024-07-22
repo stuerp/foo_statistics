@@ -57,8 +57,6 @@ public:
 
     t_filetimestamp _RetentionPeriod = system_time_periods::week * 4;
 
-    bool _StatisticsUpdated = false; // True if the statistics for the playing item have been updated.
-
 private:
     titleformat_object::ptr _ThresholdScript;
 
