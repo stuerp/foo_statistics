@@ -1,5 +1,5 @@
 
-/** $VER: Component.cpp (2024.07.16) P. Stuer **/
+/** $VER: Component.cpp (2024.07.22) P. Stuer **/
 
 #include "pch.h"
 

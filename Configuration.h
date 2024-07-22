@@ -7,6 +7,7 @@
 
 #include <SDK/titleformat.h>
 #include <SDK/system_time_keeper.h>
+#include <SDK/file.h>
 
 enum RetentionUnit : uint32_t
 {
@@ -39,6 +40,9 @@ public:
 
     void Reset() noexcept;
 
+    void Read() noexcept;
+    void Write() const noexcept;
+
     double GetThresholdTime() noexcept;
     t_filetimestamp GetRetentionPeriod() noexcept;
 
@@ -46,7 +50,7 @@ public:
     pfc::string _PinTo = "%album artist%|%album%|%subtitle%|%publisher%|%album country%|%album released%|%album recorded%|%tracknumber%|%title%|%featuring%|%remix%|%artist%|%date%"; // "%path%|%subsong%"
     pfc::string _ThresholdFormat = "$if(%length_seconds%, $min($div(%length_seconds%, 2), 30),)";
 
-    double _RetentionValue = 4.;
+    uint32_t _RetentionValue = 4;
     RetentionUnit _RetentionUnit = RetentionUnit::Weeks;
 
     WriteToTags _WriteToTags = WriteToTags::Always;

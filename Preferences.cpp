@@ -3,7 +3,6 @@
 
 #include "pch.h"
 
-#include <SDK/foobar2000-lite.h>
 #include <SDK/cfg_var.h>
 #include <SDK/preferences_page.h>
 
@@ -76,7 +75,7 @@ public:
         {
             GetDlgItemTextW(IDC_RETENTION_VALUE, Text, _countof(Text));
 
-            _Configuration._RetentionValue = ::_wtof(Text);
+            _Configuration._RetentionValue = (uint32_t) ::_wtoi(Text);
         }
 
         {
@@ -140,7 +139,7 @@ private:
         SetDlgItemTextW(IDC_PIN_TO,           pfc::wideFromUTF8(_Configuration._PinTo));
         SetDlgItemTextW(IDC_THRESHOLD_FORMAT, pfc::wideFromUTF8(_Configuration._ThresholdFormat));
 
-        SetDlgItemTextW(IDC_RETENTION_VALUE,  pfc::wideFromUTF8(pfc::format_float(_Configuration._RetentionValue, 0, 2)));
+        SetDlgItemTextW(IDC_RETENTION_VALUE,  pfc::wideFromUTF8(pfc::format_int(_Configuration._RetentionValue)));
 
         {
             auto w = (CComboBox) GetDlgItem(IDC_RETENTION_UNIT);
@@ -211,7 +210,7 @@ private:
 
         GetDlgItemTextW(IDC_RETENTION_VALUE, Text, _countof(Text));
 
-        if (_Configuration._RetentionValue!= ::_wtof(Text))
+        if (_Configuration._RetentionValue != (uint32_t) ::_wtoi(Text))
             return true;
 
         auto w = (CComboBox) GetDlgItem(IDC_RETENTION_UNIT);
@@ -229,8 +228,6 @@ private:
     const preferences_page_callback::ptr _Callback;
 
     fb2k::CDarkModeHooks _DarkModeHooks;
-
-    configuration_t _Configuration, _ActiveConfiguration;
 };
 
 #pragma region PreferencesPage
