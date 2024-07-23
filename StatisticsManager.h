@@ -1,5 +1,5 @@
 
-/** $VER: StatisticsManager.h (2024.07.19) **/
+/** $VER: StatisticsManager.h (2024.07.23) **/
 
 #include "pch.h"
 
@@ -31,9 +31,9 @@ public:
     static pfc::string TimestampToText(uint64_t timestamp);
     
     static void Reset(metadb_handle_list_cref hTracks) noexcept;
-    static void Write(metadb_handle_list_cref hTracks) noexcept;
-    static void Read(metadb_handle_list_cref hTracks) noexcept;
-    static void Import(metadb_handle_list_cref hTracks) noexcept;
+    static void WriteToTags(metadb_handle_list_cref hTracks) noexcept;
+    static void ReadFromTags(metadb_handle_list_cref hTracks) noexcept;
+    static void ImportFromPlayCount(metadb_handle_list_cref hTracks) noexcept;
     static void MarkAsPlayed(metadb_handle_list_cref hTracks) noexcept;
 
     static void SetRating(metadb_handle_list_cref hTracks, uint32_t rating) noexcept;
@@ -44,6 +44,9 @@ public:
     static void WriteTrack(const metadb_handle_ptr & hTrack) noexcept;
 
 private:
+    /// <summary>
+    /// Gets a numeric value from a tag.
+    /// </summary>
     static int64_t GetNumber(file_info_impl & fileInfo, const char * name) noexcept
     {
         const char * Value = fileInfo.meta_get(name, 0);

@@ -1,5 +1,5 @@
 
-/** $VER: Statistics.h (2024.07.19) **/
+/** $VER: Statistics.h (2024.07.23) **/
 
 #include "pch.h"
 
@@ -21,7 +21,7 @@ struct statistics_t
     void Reset() noexcept
     {
         if (Timestamps.size() > 1)
-            Timestamps.resize(1);
+            Timestamps.resize(1); // Keep the Added timestamp.
 
         Rating = 0;
     }
@@ -78,6 +78,9 @@ struct statistics_t
     void SetTimestamps(const char * s) noexcept
     {
         char * Text = ::_strdup(s);
+
+        if (Text == nullptr)
+            return;
 
         char * Context = nullptr;
 

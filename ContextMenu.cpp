@@ -32,9 +32,9 @@ namespace
     {
         { "Mark as played", "Marks the selected tracks as played.", MarkGUID, statistics_manager_t::MarkAsPlayed },
 
-        { "Write to tags", "Writes the metadata of the selected tracks to file tags.", WriteGUID, statistics_manager_t::Write },
-        { "Read from tags", "Reads the metadata of the selected tracks from file tags.", ReadGUID, statistics_manager_t::Read },
-        { "Import", "Imports the foo_playcount tags as metadata.", ImportGUID, statistics_manager_t::Import },
+        { "Write to tags", "Writes the metadata of the selected tracks to file tags.", WriteGUID, statistics_manager_t::WriteToTags },
+        { "Read from tags", "Reads the metadata of the selected tracks from file tags.", ReadGUID, statistics_manager_t::ReadFromTags },
+        { "Import", "Imports the foo_playcount tags as metadata.", ImportGUID, statistics_manager_t::ImportFromPlayCount },
 
         { "Reset", "Resets the metadata of the selected tracks.", ResetGUID, statistics_manager_t::Reset },
     };

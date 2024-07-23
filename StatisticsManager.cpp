@@ -1,5 +1,5 @@
 
-/** $VER: StatisticsManager.cpp (2024.07.22) **/
+/** $VER: StatisticsManager.cpp (2024.07.23) **/
 
 #include "pch.h"
 
@@ -167,13 +167,13 @@ void statistics_manager_t::WriteTrack(const metadb_handle_ptr & hTrack) noexcept
 
     Tracks += hTrack;
 
-    Write(Tracks);
+    WriteToTags(Tracks);
 }
 
 /// <summary>
 /// Writes the metadata of the specified tracks to file tags.
 /// </summary>
-void statistics_manager_t::Write(metadb_handle_list_cref hTracks) noexcept
+void statistics_manager_t::WriteToTags(metadb_handle_list_cref hTracks) noexcept
 {
     auto Client = MetaDbIndexClient::Instance();
 
@@ -232,7 +232,7 @@ void statistics_manager_t::Write(metadb_handle_list_cref hTracks) noexcept
 /// <summary>
 /// Reads the metadata of the specified tracks from file tags.
 /// </summary>
-void statistics_manager_t::Read(metadb_handle_list_cref hTracks) noexcept
+void statistics_manager_t::ReadFromTags(metadb_handle_list_cref hTracks) noexcept
 {
     auto Client = MetaDbIndexClient::Instance();
 
@@ -308,7 +308,7 @@ void statistics_manager_t::Read(metadb_handle_list_cref hTracks) noexcept
 /// <summary>
 /// Imports the tags of the official foo_playcount component.
 /// </summary>
-void statistics_manager_t::Import(metadb_handle_list_cref hTracks) noexcept
+void statistics_manager_t::ImportFromPlayCount(metadb_handle_list_cref hTracks) noexcept
 {
     auto Client = MetaDbIndexClient::Instance();
 
@@ -430,7 +430,7 @@ void statistics_manager_t::MarkAsPlayed(metadb_handle_list_cref hTracks) noexcep
 }
 
 /// <summary>
-/// Sets the rating of the specfied tracks.
+/// Sets the rating of the specified tracks.
 /// </summary>
 void statistics_manager_t::SetRating(metadb_handle_list_cref hTracks, uint32_t rating) noexcept
 {
@@ -448,7 +448,7 @@ void statistics_manager_t::SetRating(metadb_handle_list_cref hTracks, uint32_t r
 }
 
 /// <summary>
-/// Processes the specfied tracks.
+/// Processes the specified tracks.
 /// </summary>
 void statistics_manager_t::Process(metadb_handle_list_cref hTracks, std::function<void (statistics_t & s)> callback)
 {
@@ -481,7 +481,7 @@ void statistics_manager_t::Process(metadb_handle_list_cref hTracks, std::functio
     Transaction->commit();
 
     if (_Configuration._WriteToTags)
-        Write(hTracks);
+        WriteToTags(hTracks);
 
     Refresh(TracksToRefresh);
 }
