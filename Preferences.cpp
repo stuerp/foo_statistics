@@ -1,5 +1,5 @@
 
-/** $VER: Preferences.cpp (2024.07.22) P. Stuer **/
+/** $VER: Preferences.cpp (2024.07.23) P. Stuer **/
 
 #include "pch.h"
 
@@ -13,8 +13,6 @@
 #include <helpers/DarkMode.h>
 
 #include "Configuration.h"
-#include "Exceptions.h"
-#include "Encoding.h"
 #include "Resources.h"
 
 #pragma hdrstop

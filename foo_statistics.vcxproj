@@ -189,8 +189,6 @@
   <ItemGroup>
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="MetaDbIndexClient.h" />
-    <ClInclude Include="Encoding.h" />
-    <ClInclude Include="Exceptions.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GUIDS.h" />
     <ClInclude Include="pch.h" />
@@ -209,8 +207,6 @@
     <ClCompile Include="LibraryCallback.cpp" />
     <ClCompile Include="MetaDbDisplayFieldProvider.cpp" />
     <ClCompile Include="MetaDbIndexClient.cpp" />
-    <ClCompile Include="Encoding.cpp" />
-    <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="MetaDbIOEditCallback.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

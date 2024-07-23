@@ -1,10 +1,9 @@
 
-/** $VER: configuration.cpp (2024.07.22) P. Stuer **/
+/** $VER: configuration.cpp (2024.07.23) P. Stuer **/
 
 #include "pch.h"
 
 #include "Configuration.h"
-#include "Encoding.h"
 #include "Resources.h"
 
 #include <SDK/file.h>
