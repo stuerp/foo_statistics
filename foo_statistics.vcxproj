@@ -201,7 +201,7 @@
   <ItemGroup>
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Configuration.cpp" />
-    <ClCompile Include="ContextMenu.cpp" />
+    <ClCompile Include="ContextMenuSimple.cpp" />
     <ClCompile Include="FileOperationCallback.cpp" />
     <ClCompile Include="InitQuit.cpp" />
     <ClCompile Include="LibraryCallback.cpp" />

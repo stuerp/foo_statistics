@@ -43,7 +43,7 @@ namespace
         { "Preferences...", "Opens the " STR_COMPONENT_NAME " preferences page.", PreferencesGUID, [](metadb_handle_list_cref) { static_api_ptr_t<ui_control>()->show_preferences(GUID_PREFERENCES); }, }
     };
 
-    static const GUID RatingGUID    = { 0xd445a8db, 0xdfb6, 0x442d, { 0xa3, 0xc8, 0x72, 0x74, 0x4, 0x3c, 0x92, 0x2f } };
+//  static const GUID RatingGUID    = { 0xd445a8db, 0xdfb6, 0x442d, { 0xa3, 0xc8, 0x72, 0x74, 0x4, 0x3c, 0x92, 0x2f } };
 
     static const GUID NoneGUID      = {0xf2a25ab3,0xa971,0x46ea,{0xa2,0x2f,0xd6,0x71,0x3c,0x4e,0x69,0xb4}}; // {f2a25ab3-a971-46ea-a22f-d6713c4e69b4}
     static const GUID OneGUID       = {0x4390684d,0x011e,0x43a1,{0xa7,0x37,0xf6,0x4d,0x01,0x0c,0x66,0x74}}; // {4390684d-011e-43a1-a737-f64d010c6674}
@@ -80,7 +80,7 @@ namespace
 
         bool get_display_data(pfc::string_base & text, unsigned & flags, metadb_handle_list_cref hTracks, const GUID & caller)
         {
-            if (_Rating >= 6)
+            if (_Rating >= _countof(RatingGUIDs))
                 FB2K_BugCheck();
 
             if (_Rating == 0)
@@ -95,7 +95,7 @@ namespace
 
         void execute(metadb_handle_list_cref hTracks, const GUID & caller)
         {
-            if (_Rating >= 6)
+            if (_Rating >= _countof(RatingGUIDs))
                 FB2K_BugCheck();
 
             statistics_manager_t::SetRating(hTracks, (uint32_t) _Rating);
@@ -103,7 +103,7 @@ namespace
 
         bool get_description(pfc::string_base & text)
         {
-            if (_Rating >= 6)
+            if (_Rating >= _countof(RatingGUIDs))
                 FB2K_BugCheck();
 
             if (_Rating == 0)
@@ -155,7 +155,7 @@ namespace
 
         t_size get_children_count()
         {
-            return 6;
+            return _countof(RatingGUIDs);
         }
 
         contextmenu_item_node * get_child(t_size index)
@@ -165,20 +165,9 @@ namespace
 
         GUID get_guid()
         {
-            return RatingGUID;
-        }
-/*
-        void execute(metadb_handle_list_cref p_data, const GUID & p_caller)
-        {
+            return pfc::guid_null;
         }
 
-        bool get_description(pfc::string_base & text)
-        {
-            text = "Sets the rating of the selected tracks.";
-
-            return true;
-        }
-*/
         bool is_mappable_shortcut()
         {
             return false;
