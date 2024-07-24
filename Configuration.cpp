@@ -1,5 +1,5 @@
 
-/** $VER: configuration.cpp (2024.07.23) P. Stuer **/
+/** $VER: configuration.cpp (2024.07.24) P. Stuer **/
 
 #include "pch.h"
 
@@ -46,6 +46,8 @@ void configuration_t::Reset() noexcept
     _RetentionValue = 4;
     _RetentionUnit = RetentionUnit::Weeks;
 
+    _RemoveOldTags = RemoveOldTags::All;
+
     _WriteToTags = WriteToTags::Always;
 }
 
@@ -59,6 +61,8 @@ configuration_t & configuration_t::operator=(const configuration_t & other)
 
     _RetentionValue     = other._RetentionValue;
     _RetentionUnit      = other._RetentionUnit;
+
+    _RemoveOldTags      = other._RemoveOldTags;
 
     _WriteToTags        = other._WriteToTags;
 

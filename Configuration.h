@@ -1,5 +1,5 @@
 ﻿
-/** $VER: Configuration.h (2024.07.22) P. Stuer **/
+/** $VER: Configuration.h (2024.07.24) P. Stuer **/
 
 #pragma once
 
@@ -24,6 +24,16 @@ enum WriteToTags : uint32_t
 {
     Never = 0,
     Always = ~0U
+};
+
+enum RemoveOldTags : uint32_t
+{
+    None = 0,
+
+    foo_playcount = 1,
+    foo_playcount_2003 = 2,
+
+    All = ~0U
 };
 
 /// <summary>
@@ -54,6 +64,7 @@ public:
     RetentionUnit _RetentionUnit = RetentionUnit::Weeks;
 
     WriteToTags _WriteToTags = WriteToTags::Always;
+    RemoveOldTags _RemoveOldTags = RemoveOldTags::All;
 
     t_filetimestamp _RetentionPeriod = system_time_periods::week * 4;
 

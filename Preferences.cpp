@@ -245,9 +245,7 @@ public:
 
     GUID get_guid()
     {
-        static constexpr GUID _GUID = GUID_PREFERENCES;
-
-        return _GUID;
+        return GUID_PREFERENCES;
     }
 
     GUID get_parent_guid()

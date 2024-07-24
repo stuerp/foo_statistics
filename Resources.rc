@@ -1,5 +1,5 @@
 
-/** $VER: Resources.rc (2024.07.22) P. Stuer **/
+/** $VER: Resources.rc (2024.07.24) P. Stuer **/
 
 #include "Resources.h"
 
@@ -60,5 +60,8 @@ font 8, "Segoe UI", 400, 0, 1
     edittext                                        IDC_RETENTION_VALUE,    X_A21, Y_A21,     W_A21, H_A21, ES_RIGHT | ES_AUTOHSCROLL | WS_TABSTOP
     combobox                                        IDC_RETENTION_UNIT,     X_A22, Y_A22,     W_A22, H_A22, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 
-    control     "Write statistics to tags",         IDC_WRITE_TO_TAGS, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, X_A50, Y_A50, W_A50, H_A50
+    rtext       "Remove old tags:",                 IDC_STATIC,             X_A30, Y_A30 + 2, W_A30, H_A30
+    combobox                                        IDC_REMOVE_OLD_TAGS,    X_A31, Y_A31,     W_A31, H_A31, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+
+    control     "Write statistics to tags",         IDC_WRITE_TO_TAGS,      "Button", BS_AUTOCHECKBOX | WS_TABSTOP, X_A50, Y_A50, W_A50, H_A50
 }

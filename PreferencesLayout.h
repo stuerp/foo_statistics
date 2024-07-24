@@ -1,5 +1,5 @@
 
-/** $VER: PreferencesLayout.h (2024.07.22) **/
+/** $VER: PreferencesLayout.h (2024.07.24) **/
 
 #pragma once
 
@@ -77,8 +77,24 @@
 
 #pragma endregion
 
+#pragma region Remove old tags
+
+// Label
+#define X_A30   0
+#define Y_A30   Y_A22 + H_A22 + IY
+#define W_A30   85
+#define H_A30   H_LBL
+
+// ComboBox
+#define X_A31   X_A30 + W_A30 + IX
+#define Y_A31   Y_A30
+#define W_A31   44
+#define H_A31   H_CBX
+
+#pragma endregion
+
 // Checkbox: Write to tags
 #define X_A50   0
-#define Y_A50   Y_A21 + H_A21 + IY
+#define Y_A50   Y_A31 + H_A31 + IY
 #define W_A50   160
 #define H_A50   H_LBL

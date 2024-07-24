@@ -1,5 +1,5 @@
 
-/** $VER: Resources.h (2024.07.22) P. Stuer **/
+/** $VER: Resources.h (2024.07.24) P. Stuer **/
 
 #pragma once
 
@@ -47,9 +47,7 @@
 
 /** Window **/
 
-#define GUID_UI_ELEMENT         { 0x834e7cfc, 0x6fd7, 0x46cf, { 0x87, 0x65, 0xf1, 0xc8, 0xb2, 0x0f, 0x49, 0x30 } };
-#define GUID_PREFERENCES        { 0x29f3ee03, 0xa782, 0x4a2a, { 0xa2, 0xf1, 0x7b, 0xec, 0xb2, 0xaf, 0x6a, 0xb2 } };
-#define STR_WINDOW_CLASS_NAME   STR_COMPONENT_BASENAME "_{3D4BB765-4724-47D4-BF0A-9EAAF51E5BC0}"
+#define GUID_PREFERENCES        { 0x29f3ee03, 0xa782, 0x4a2a, { 0xa2, 0xf1, 0x7b, 0xec, 0xb2, 0xaf, 0x6a, 0xb2 } }
 
 /** Preferences **/
 
@@ -62,3 +60,4 @@
 #define IDC_RETENTION_UNIT                  1006
 
 #define IDC_WRITE_TO_TAGS                   1050
+#define IDC_REMOVE_OLD_TAGS                 1051

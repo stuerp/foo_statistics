@@ -210,12 +210,9 @@ void statistics_manager_t::WriteToTags(metadb_handle_list_cref hTracks) noexcept
 
                     if (Statistics.Rating != 0)
                         FileInfo.meta_set(TagRating, pfc::format_uint(Statistics.Rating));
-/*
-                    FileInfo.meta_set(TagAddedTimestamp, pfc::format_uint(Statistics.GetAddedTimestamp()));
-                    FileInfo.meta_set(TagFirstPlayedTimestamp, pfc::format_uint(Statistics.GetFirstPlayedTimestamp()));
-                    FileInfo.meta_set(TagLastPlayedTimestamp, pfc::format_uint(Statistics.GetLastPlayedTimestamp()));
-                    FileInfo.meta_set(TagPlaycount, pfc::format_uint(Statistics.GetPlaycount()));
-*/
+                    else
+                        FileInfo.meta_remove_field(TagRating);
+
                     Writer->set_info(SubSongIndex, FileInfo, fb2k::noAbort);
 
                     Writer->commit(fb2k::noAbort);
