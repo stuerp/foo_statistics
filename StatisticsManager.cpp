@@ -1,5 +1,5 @@
 
-/** $VER: StatisticsManager.cpp (2024.07.23) **/
+/** $VER: StatisticsManager.cpp (2024.07.24) **/
 
 #include "pch.h"
 
@@ -204,14 +204,22 @@ void statistics_manager_t::WriteToTags(metadb_handle_list_cref hTracks) noexcept
 
                     Writer->get_info(SubSongIndex, FileInfo, fb2k::noAbort);
 
-                    const auto Statistics = statistics_manager_t::GetStatistics(Hash);
+                    {
+                        const auto Statistics = statistics_manager_t::GetStatistics(Hash);
 
-                    FileInfo.meta_set(TagTimestamps, Statistics.GetTimestamps());
+                        FileInfo.meta_set(TagTimestamps, Statistics.GetTimestamps());
 
-                    if (Statistics.Rating != 0)
-                        FileInfo.meta_set(TagRating, pfc::format_uint(Statistics.Rating));
-                    else
-                        FileInfo.meta_remove_field(TagRating);
+                        if (Statistics.Rating != 0)
+                            FileInfo.meta_set(TagRating, pfc::format_uint(Statistics.Rating));
+                        else
+                            FileInfo.meta_remove_field(TagRating);
+
+                        if (_Configuration._RemoveTags)
+                        {
+                            for (const auto & Tag : _Configuration._TagsToRemoveList)
+                                FileInfo.meta_remove_field(Tag);
+                        }
+                    }
 
                     Writer->set_info(SubSongIndex, FileInfo, fb2k::noAbort);
 

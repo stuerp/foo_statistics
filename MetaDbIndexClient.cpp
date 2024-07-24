@@ -57,7 +57,7 @@ void MetaDbIndexClient::Initialize() noexcept
 
     try
     {
-        Manager->add(Instance(), MetaDbGUID, _Configuration._RetentionPeriod);
+        Manager->add(Instance(), MetaDbGUID, _Configuration.GetRetentionPeriod());
         Manager->dispatch_global_refresh(); // Dispatches a global refresh, asks all components to refresh all tracks. To be calling after adding/removing indexes.
     }
     catch (const std::exception & e)

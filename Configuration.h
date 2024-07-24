@@ -26,16 +26,6 @@ enum WriteToTags : uint32_t
     Always = ~0U
 };
 
-enum RemoveOldTags : uint32_t
-{
-    None = 0,
-
-    foo_playcount = 1,
-    foo_playcount_2003 = 2,
-
-    All = ~0U
-};
-
 /// <summary>
 /// Represents the configuration of the component.
 /// </summary>
@@ -54,19 +44,23 @@ public:
     void Write() const noexcept;
 
     double GetThresholdTime() noexcept;
-    t_filetimestamp GetRetentionPeriod() noexcept;
+    t_filetimestamp GetRetentionPeriod() const noexcept;
+
+private:
+    void ParseTagsToRemove() noexcept;
 
 public:
-    pfc::string _PinTo = "%album artist%|%album%|%subtitle%|%publisher%|%album country%|%album released%|%album recorded%|%tracknumber%|%title%|%featuring%|%remix%|%artist%|%date%"; // "%path%|%subsong%"
-    pfc::string _ThresholdFormat = "$if(%length_seconds%, $min($div(%length_seconds%, 2), 30),)";
+    pfc::string _PinTo;
+    pfc::string _ThresholdFormat;
 
-    uint32_t _RetentionValue = 4;
-    RetentionUnit _RetentionUnit = RetentionUnit::Weeks;
+    uint32_t _RetentionValue;
+    RetentionUnit _RetentionUnit;
 
     WriteToTags _WriteToTags = WriteToTags::Always;
-    RemoveOldTags _RemoveOldTags = RemoveOldTags::All;
+    bool _RemoveTags;
+    pfc::string _TagsToRemove;
 
-    t_filetimestamp _RetentionPeriod = system_time_periods::week * 4;
+    std::vector<pfc::string> _TagsToRemoveList;
 
 private:
     titleformat_object::ptr _ThresholdScript;

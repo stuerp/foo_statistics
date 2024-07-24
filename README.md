@@ -3,12 +3,14 @@
 
 [foo_statistics](https://github.com/stuerp/foo_statistics/releases) is a [foobar2000](https://www.foobar2000.org/) component that collects and maintains statistics about tracks in the media library.
 
-It was created because the behavior of the official foo_playcount component changed behavior when it was released as 64-bit.
+The statistics can optionally be written to file tags. The statistics from foo_playcount can be imported from its tags and optionally removed.
+
+It was created because the official foo_playcount component changed its behavior when it was released as 64-bit.
 
 ## Features
 
 * Configurable tracking pattern
-* Configurable period after which a track is considered 'played': as a number of seconds and as a percentage of the total length of the track.
+* Configurable period after which a track is considered 'played'.
 * Can import tags from the official foo_playcount component.
 * Collected statistics:
   * Timestamp when the track gets added to the Media Library
@@ -111,11 +113,6 @@ Open `foo_statistics.sln` with Visual Studio and build the solution.
 ### Packaging
 
 To create the component first build the x86 configuration and next the x64 configuration.
-
-## Contributing
-
-If you'd like to contribute, please fork the repository and use a feature
-branch. Pull requests are warmly welcome.
 
 ## Change Log
 

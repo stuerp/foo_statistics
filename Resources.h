@@ -60,4 +60,6 @@
 #define IDC_RETENTION_UNIT                  1006
 
 #define IDC_WRITE_TO_TAGS                   1050
-#define IDC_REMOVE_OLD_TAGS                 1051
+#define IDC_REMOVE_TAGS                     1051
+
+#define IDC_TAGS_TO_REMOVE                  1052

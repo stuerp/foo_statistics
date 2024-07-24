@@ -1,5 +1,5 @@
 
-/** $VER: Preferences.cpp (2024.07.23) P. Stuer **/
+/** $VER: Preferences.cpp (2024.07.24) P. Stuer **/
 
 #include "pch.h"
 
@@ -82,9 +82,15 @@ public:
             _Configuration._RetentionUnit = (RetentionUnit) w.GetCurSel();
         }
 
-        _Configuration._RetentionPeriod = _Configuration.GetRetentionPeriod();
-
         _Configuration._WriteToTags = (SendDlgItemMessageW(IDC_WRITE_TO_TAGS, BM_GETCHECK) == BST_CHECKED) ? WriteToTags::Always : WriteToTags::Never;
+
+        _Configuration._RemoveTags = (SendDlgItemMessageW(IDC_REMOVE_TAGS, BM_GETCHECK) == BST_CHECKED);
+
+        {
+            GetDlgItemTextW(IDC_TAGS_TO_REMOVE, Text, _countof(Text));
+
+            _Configuration._TagsToRemove = pfc::utf8FromWide(Text);
+        }
 
         OnChanged();
     }
@@ -114,6 +120,9 @@ public:
         COMMAND_HANDLER_EX(IDC_RETENTION_UNIT, CBN_SELCHANGE, OnSelectionChanged) // This also handles LBN_SELCHANGE
 
         COMMAND_HANDLER_EX(IDC_WRITE_TO_TAGS, BN_CLICKED, OnButtonClicked)
+        COMMAND_HANDLER_EX(IDC_REMOVE_TAGS, BN_CLICKED, OnButtonClicked)
+
+        COMMAND_HANDLER_EX(IDC_TAGS_TO_REMOVE, EN_CHANGE, OnEditChange)
     END_MSG_MAP()
 
 private:
@@ -154,7 +163,15 @@ private:
             w.SetCurSel((int) _Configuration._RetentionUnit);
         }
 
-        SendDlgItemMessageW(IDC_WRITE_TO_TAGS, BM_SETCHECK, (WPARAM) ((_Configuration._WriteToTags == WriteToTags::Always) ? BST_CHECKED : BST_UNCHECKED));
+        ((CCheckBox) GetDlgItem(IDC_WRITE_TO_TAGS)).SetCheck((_Configuration._WriteToTags == WriteToTags::Always) ? BST_CHECKED : BST_UNCHECKED);
+        ((CCheckBox) GetDlgItem(IDC_REMOVE_TAGS)).SetCheck(_Configuration._RemoveTags ? BST_CHECKED : BST_UNCHECKED);
+
+        {
+            auto w = GetDlgItem(IDC_TAGS_TO_REMOVE);
+
+            w.SetWindowTextW(pfc::wideFromUTF8(_Configuration._TagsToRemove));
+            w.EnableWindow(_Configuration._RemoveTags);
+        }
     }
 
     /// <summary>
@@ -176,8 +193,11 @@ private:
     /// <summary>
     /// Handles a click on a button.
     /// </summary>
-    void OnButtonClicked(UINT, int, CWindow) noexcept
+    void OnButtonClicked(UINT, int id, CWindow w) noexcept
     {
+        if (id == IDC_REMOVE_TAGS)
+            GetDlgItem(IDC_TAGS_TO_REMOVE).EnableWindow(((CCheckBox) w).IsChecked());
+
         OnChanged();
     }
 
@@ -211,12 +231,18 @@ private:
         if (_Configuration._RetentionValue != (uint32_t) ::_wtoi(Text))
             return true;
 
-        auto w = (CComboBox) GetDlgItem(IDC_RETENTION_UNIT);
-
-        if (_Configuration._RetentionUnit != (RetentionUnit) w.GetCurSel())
+        if (_Configuration._RetentionUnit != (RetentionUnit) ((CComboBox) GetDlgItem(IDC_RETENTION_UNIT)).GetCurSel())
             return true;
 
         if (SendDlgItemMessageW(IDC_WRITE_TO_TAGS, BM_GETCHECK) != ((_Configuration._WriteToTags == WriteToTags::Always) ? BST_CHECKED : BST_UNCHECKED))
+            return true;
+
+        if (SendDlgItemMessageW(IDC_REMOVE_TAGS, BM_GETCHECK) != (_Configuration._RemoveTags ? BST_CHECKED : BST_UNCHECKED))
+            return true;
+
+        GetDlgItemTextW(IDC_TAGS_TO_REMOVE, Text, _countof(Text));
+
+        if (_Configuration._TagsToRemove != pfc::utf8FromWide(Text))
             return true;
 
         return false;

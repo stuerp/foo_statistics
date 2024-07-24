@@ -1,5 +1,5 @@
 
-/** $VER: Statistics.h (2024.07.23) **/
+/** $VER: Statistics.h (2024.07.24) **/
 
 #include "pch.h"
 
@@ -77,6 +77,8 @@ struct statistics_t
     /// </summary>
     void SetTimestamps(const char * s) noexcept
     {
+        const char * Delimiters = "; ";
+
         char * Text = ::_strdup(s);
 
         if (Text == nullptr)
@@ -84,7 +86,7 @@ struct statistics_t
 
         char * Context = nullptr;
 
-        char * Token = ::strtok_s(Text, ";", &Context);
+        char * Token = ::strtok_s(Text, Delimiters, &Context);
 
         while (Token != nullptr)
         {
@@ -93,7 +95,7 @@ struct statistics_t
             if (errno != ERANGE)
                 Timestamps.push_back(Timestamp);
 
-            Token = ::strtok_s(nullptr, ";", &Context);
+            Token = ::strtok_s(nullptr, Delimiters, &Context);
         }
 
         ::free(Text);

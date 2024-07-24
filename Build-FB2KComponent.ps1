@@ -46,7 +46,7 @@ if ($Platform -eq 'x64')
     {
         Write-Host "Copying $TargetFileName to `"$PackagePath/x64`"...";
 
-        Copy-Item "$OutputPath/$TargetFileName" -Destination "$PackagePath/x64" -Force -Verbose;
+        $null = Copy-Item "$OutputPath/$TargetFileName" -Destination "$PackagePath/x64" -Force;
     }
 
     # install the component in the foobar2000 x64 components directory: "bin/profile/user-components-x64/TargetName"
@@ -62,7 +62,7 @@ if ($Platform -eq 'x64')
 
         Write-Host "Installing x64 component in foobar2000 64-bit profile...";
 
-        Copy-Item "$PackagePath/x64/*.dll" -Destination "$ComponentPath/$TargetName" -Force -Verbose;
+        $null = Copy-Item "$PackagePath/x64/*.dll" -Destination "$ComponentPath/$TargetName" -Force;
     }
     else
     {
@@ -75,7 +75,7 @@ elseif ($Platform -eq 'Win32')
     {
         Write-Host "Copying $TargetFileName to `"$PackagePath`"...";
 
-        Copy-Item "$OutputPath/$TargetFileName" -Destination "$PackagePath" -Force -Verbose;
+        $null = Copy-Item "$OutputPath/$TargetFileName" -Destination "$PackagePath" -Force;
     }
 
     # install the component in the foobar2000 x86 components directory: "bin/x86/profile/user-components/TargetName"
@@ -91,7 +91,7 @@ elseif ($Platform -eq 'Win32')
 
         Write-Host "Installing x86 component in foobar2000 32-bit profile...";
 
-        Copy-Item "$PackagePath/*.dll" -Destination "$ComponentPath/$TargetName" -Force -Verbose;
+        $null = Copy-Item "$PackagePath/*.dll" -Destination "$ComponentPath/$TargetName" -Force;
     }
     else
     {
