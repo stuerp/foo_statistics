@@ -1,5 +1,5 @@
 
-/** $VER: MetaDbIOEditCallback.cpp (2024.07.18) **/
+/** $VER: MetaDbIOEditCallback.cpp (2024.07.29) **/
 
 #include "pch.h"
 
@@ -28,6 +28,9 @@ namespace
 
         virtual ~MetadbIOEditCallback() { };
 
+        /// <summary>
+        ///  Called after the user has edited tags on a set of files.
+        /// </summary>
         void on_edited(metadb_handle_list_cref hTracks, t_infosref oldInfos, t_infosref newInfos)
         {
             hash_list_t TracksToRefresh;
@@ -58,6 +61,8 @@ namespace
 
                 Transaction->commit();
             }
+
+            statistics_manager_t::ReadFromTags(hTracks);
 
             statistics_manager_t::Refresh(TracksToRefresh);
         }
