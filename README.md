@@ -3,9 +3,9 @@
 
 [foo_statistics](https://github.com/stuerp/foo_statistics/releases) is a [foobar2000](https://www.foobar2000.org/) component that collects and maintains statistics about tracks in the media library.
 
-The statistics can optionally be written to file tags. The statistics from foo_playcount can be imported from its tags and optionally removed.
+The statistics can optionally be written to file tags. The statistics from [foo_playcount](https://www.foobar2000.org/components/view/foo_playcount) can be imported from its tags and optionally removed.
 
-It was created because the official foo_playcount component changed its behavior when it was released as 64-bit.
+It was created because the official [foo_playcount](https://www.foobar2000.org/components/view/foo_playcount) component changed its behavior when it was released as 64-bit.
 
 ## Features
 
@@ -70,7 +70,7 @@ The following metadata is available:
 The following tags are available:
 
 %_timestamps%
-    A semicolon-separate list of the all the timestamps collected. The first entry is the timestamp when the track was added to the media library. The following entries are the timestamps of when the track was played.
+    A semicolon-separate list of all the collected timestamps. The first entry is the timestamp when the track was added to the media library. The following entries are the timestamps of when the track was played.
 
 %_rating%
     The track's rating.
@@ -116,13 +116,14 @@ To create the component first build the x86 configuration and next the x64 confi
 
 ## Change Log
 
-### v0.1.0.0, 2024-07-xx
+### v0.1.2.0, 2024-08-10
 
 * Initial release.
 
 ## Acknowledgements / Credits
 
 * Peter Pawlowski for the [foobar2000](https://www.foobar2000.org/) audio player. ![foobar2000](https://www.foobar2000.org/button-small.png)
+* [marc2k3](https://github.com/marc2k3) for the releasing the source code of [foo_playcount_2003](https://github.com/marc2k3/foo_playcount_2003)
 
 ## Reference Material
 
