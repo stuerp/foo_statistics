@@ -1,5 +1,5 @@
 
-/** $VER: Statistics.h (2024.07.24) **/
+/** $VER: Statistics.h (2024.08.23) **/
 
 #include "pch.h"
 
@@ -39,14 +39,36 @@ struct statistics_t
         return (Timestamps.size() > 0) ? Timestamps.front() : 0;
     }
 
+    void SetFirstPlayedTimestamp(uint64_t timestamp) noexcept
+    {
+        if (Timestamps.size() > 1)
+            Timestamps[1] = timestamp;
+        else
+            AddPlayTimestamp(timestamp);
+    }
+
     uint64_t GetFirstPlayedTimestamp() const noexcept
     {
         return (Timestamps.size() > 1) ? Timestamps[1] : 0;
     }
 
+    void SetLastPlayedTimestamp(uint64_t timestamp) noexcept
+    {
+        if (Timestamps.size() > 1)
+            Timestamps[Timestamps.size() - 1] = timestamp;
+        else
+            AddPlayTimestamp(timestamp);
+    }
+
     uint64_t GetLastPlayedTimestamp() const noexcept
     {
         return (Timestamps.size() > 2) ? Timestamps.back() : GetFirstPlayedTimestamp();
+    }
+
+    void AddPlayTimestamp(uint64_t timestamp) noexcept
+    {
+        if (Timestamps.size() > 0)
+            Timestamps.push_back(timestamp); // Only add a play timestamp if the track is in the media library.
     }
 
     uint32_t GetPlaycount() const noexcept

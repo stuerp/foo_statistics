@@ -116,6 +116,10 @@ To create the component first build the x86 configuration and next the x64 confi
 
 ## Change Log
 
+### v0.1.2.1, 2024-08-23
+
+* FIXED: Tracks that are not part of the media library received play timestamps.
+
 ### v0.1.2.0, 2024-08-10
 
 * Initial release.

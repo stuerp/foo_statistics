@@ -1,5 +1,5 @@
 
-/** $VER: StatisticsManager.cpp (2024.07.24) **/
+/** $VER: StatisticsManager.cpp (2024.08.23) **/
 
 #include "pch.h"
 
@@ -36,34 +36,6 @@ metadb_index_manager_v2::ptr statistics_manager_t::GetMetaDbIndexManager() noexc
 /// </summary>
 void statistics_manager_t::OnItemPlayed(const metadb_handle_ptr & hTrack) noexcept
 {
-/*
-    const auto Timestamp = Now();
-
-    metadb_index_hash Hash = 0;
-
-    if (!MetaDbIndexClient::Instance()->hashHandle(hTrack, Hash))
-        return;
-
-    {
-        auto Statistics = GetStatistics(Hash);
-
-        Statistics.Timestamps.push_back(Timestamp);
-
-        {
-            auto Transaction = GetMetaDbIndexManager()->begin_transaction();
-
-            PutStatistics(Hash, Statistics, Transaction);
-
-            Transaction->commit();
-        }
-
-        if (_Configuration._WriteToTags)
-            Write(hTrack);
-
-        // Signals all components that the metadata for the specified track has been altered.
-        GetMetaDbIndexManager()->dispatch_refresh(MetaDbGUID, Hash);
-    }
-*/
     metadb_handle_list_t Tracks;
 
     Tracks += hTrack;
@@ -84,9 +56,9 @@ statistics_t statistics_manager_t::GetStatistics(metadb_index_hash hash) noexcep
     {
         try
         {
-            statistics_t Statistics;
-
             stream_reader_formatter_simple_ref Reader(Data.get_ptr(), Data.get_size());
+
+            statistics_t Statistics;
 
             // Read the timestamps.
             uint32_t Size;
@@ -112,7 +84,7 @@ statistics_t statistics_manager_t::GetStatistics(metadb_index_hash hash) noexcep
         }
     }
 
-    return statistics_t();
+    return statistics_t(); // Return an empty record.
 }
 
 /// <summary>
@@ -357,7 +329,7 @@ void statistics_manager_t::ImportFromPlayCount(metadb_handle_list_cref hTracks) 
 
                         if (FirstPlayed != 0)
                         {
-                            Statistics.Timestamps.push_back(FirstPlayed);
+                            Statistics.SetFirstPlayedTimestamp(FirstPlayed);
 
                             uint64_t Playcount = (uint64_t) statistics_manager_t::GetNumber(FileInfo, "play_count");
 
@@ -379,11 +351,11 @@ void statistics_manager_t::ImportFromPlayCount(metadb_handle_list_cref hTracks) 
                                         {
                                             Timestamp += Delta;
 
-                                            Statistics.Timestamps.push_back(Timestamp);
+                                            Statistics.AddPlayTimestamp(Timestamp);
                                         }
                                     }
 
-                                    Statistics.Timestamps.push_back(LastPlayed);
+                                    Statistics.AddPlayTimestamp(LastPlayed);
                                 }
                             }
                         }
@@ -425,7 +397,7 @@ void statistics_manager_t::MarkAsPlayed(metadb_handle_list_cref hTracks) noexcep
 
         statistics_manager_t::Process(hTracks, [Timestamp](statistics_t & s)
         {
-            s.Timestamps.push_back(Timestamp);
+            s.AddPlayTimestamp(Timestamp);
         });
     }
     catch (const std::exception & e)

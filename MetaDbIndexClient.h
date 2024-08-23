@@ -1,5 +1,5 @@
 
-/** $VER: MetaDbIndexClient.h (2024.07.17) **/
+/** $VER: MetaDbIndexClient.h (2024.08.23) **/
 
 #include "pch.h"
 
@@ -8,7 +8,7 @@
 #pragma once
 
 /// <summary>
-/// Transforms track information (location + metadata) to a hash for metadb_index_manager.
+/// Transforms track information (location + metadata) to a metadb_index_manager hash to which our data gets pinned.
 /// </summary>
 class MetaDbIndexClient : public metadb_index_client
 {

@@ -204,7 +204,7 @@
     <ClCompile Include="ContextMenuSimple.cpp" />
     <ClCompile Include="FileOperationCallback.cpp" />
     <ClCompile Include="InitQuit.cpp" />
-    <ClCompile Include="LibraryCallback.cpp" />
+    <ClCompile Include="MediaLibraryCallback.cpp" />
     <ClCompile Include="MetaDbDisplayFieldProvider.cpp" />
     <ClCompile Include="MetaDbIndexClient.cpp" />
     <ClCompile Include="MetaDbIOEditCallback.cpp" />

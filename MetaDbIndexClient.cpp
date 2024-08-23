@@ -1,5 +1,5 @@
 
-/** $VER: MetaDbClient.cpp (2024.07.18) **/
+/** $VER: MetaDbClient.cpp (2024.08.23) **/
 
 #include "pch.h"
 
@@ -58,14 +58,17 @@ void MetaDbIndexClient::Initialize() noexcept
     try
     {
         Manager->add(Instance(), MetaDbGUID, _Configuration.GetRetentionPeriod());
-        Manager->dispatch_global_refresh(); // Dispatches a global refresh, asks all components to refresh all tracks. To be calling after adding/removing indexes.
     }
     catch (const std::exception & e)
     {
         Manager->remove(MetaDbGUID);
 
         console::print(STR_COMPONENT_BASENAME " failed to initialize database: ", e.what());
+
+        return;
     }
+
+    Manager->dispatch_global_refresh(); // Dispatches a global refresh, asks all components to refresh all tracks. To be calling after adding/removing indexes.
 }
 
 #pragma endregion
@@ -83,5 +86,5 @@ metadb_index_hash MetaDbIndexClient::HashPathName(pfc::string pathName) noexcept
 /// </summary>
 metadb_index_hash MetaDbIndexClient::HashString(pfc::string s) noexcept
 {
-    return _Hasher->process_single_string(s).xorHalve();
+    return _Hasher->process_single_string(s).xorHalve(); // Make an MD5 hash of the string, then reduce it to 64-bit metadb_index_hash.
 }

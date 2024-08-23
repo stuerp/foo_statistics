@@ -1,5 +1,5 @@
 
-/** $VER: LibraryCallback.cpp (2024.07.19) **/
+/** $VER: MediaLibraryCallback.cpp (2024.08.23) **/
 
 #include "pch.h"
 
@@ -20,17 +20,17 @@ namespace
     /// <summary>
     /// Callback service receiving notifications about Media Library content changes.
     /// </summary>
-    class LibraryCallback : public library_callback_v2
+    class MediaLibraryCallback : public library_callback_v2
     {
     public:
-        LibraryCallback() noexcept { };
+        MediaLibraryCallback() noexcept { };
 
-        LibraryCallback(const LibraryCallback &) = delete;
-        LibraryCallback(LibraryCallback &&) = delete;
-        LibraryCallback & operator=(const LibraryCallback &) = delete;
-        LibraryCallback & operator=(LibraryCallback &&) = delete;
+        MediaLibraryCallback(const MediaLibraryCallback &) = delete;
+        MediaLibraryCallback(MediaLibraryCallback &&) = delete;
+        MediaLibraryCallback & operator=(const MediaLibraryCallback &) = delete;
+        MediaLibraryCallback & operator=(MediaLibraryCallback &&) = delete;
 
-        virtual ~LibraryCallback() { };
+        virtual ~MediaLibraryCallback() { };
 
         // Called when new items are added to the Media Library.
         void on_items_added(metadb_handle_list_cref hTracks) final
@@ -117,5 +117,5 @@ namespace
         }
     };
 
-    FB2K_SERVICE_FACTORY(LibraryCallback);
+    FB2K_SERVICE_FACTORY(MediaLibraryCallback);
 }

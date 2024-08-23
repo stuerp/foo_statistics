@@ -16,7 +16,7 @@
 namespace
 {
     /// <summary>
-    /// Allows metadb v2 info records to be handed over transparently.
+    /// Provides our values for the Properties dialog.
     /// </summary>
     class TrackPropertyProvider : public track_property_provider_v5
     {
@@ -32,7 +32,7 @@ namespace
 
         /// <summary>
         /// Returns whether the specified tech info field is processed by our service and should not be displayed among unknown fields.
-        /// <returns></returns>
+        /// </summary>
         bool is_our_tech_info(const char *) final
         {
             return false;
