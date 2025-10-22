@@ -58,17 +58,25 @@ namespace
 
                 const auto Statistics = statistics_manager_t::GetStatistics(Hash);
 
-                if (Statistics.GetAddedTimestamp() > 0)
-                    callback.set_property(STR_COMPONENT_NAME, 0.0, "Added", statistics_manager_t::TimestampToText(Statistics.GetAddedTimestamp()));
+                uint64_t Timestamp = Statistics.GetAddedTimestamp();
 
-                if (Statistics.GetFirstPlayedTimestamp() > 0)
-                    callback.set_property(STR_COMPONENT_NAME, 1.0, "First Played", statistics_manager_t::TimestampToText(Statistics.GetFirstPlayedTimestamp()));
+                if (Timestamp > 0)
+                    callback.set_property(STR_COMPONENT_NAME, 0.0, "Added", statistics_manager_t::TimestampToText(Timestamp));
 
-                if (Statistics.GetLastPlayedTimestamp() > 0)
-                    callback.set_property(STR_COMPONENT_NAME, 2.0, "Last Played", statistics_manager_t::TimestampToText(Statistics.GetLastPlayedTimestamp()));
+                Timestamp = Statistics.GetFirstPlayedTimestamp();
 
-                if (Statistics.GetPlaycount() > 0)
-                    callback.set_property(STR_COMPONENT_NAME, 3.0, "Playcount", pfc::format_uint(Statistics.GetPlaycount()));
+                if (Timestamp > 0)
+                    callback.set_property(STR_COMPONENT_NAME, 1.0, "First Played", statistics_manager_t::TimestampToText(Timestamp));
+
+                Timestamp = Statistics.GetLastPlayedTimestamp();
+
+                if (Timestamp > 0)
+                    callback.set_property(STR_COMPONENT_NAME, 2.0, "Last Played", statistics_manager_t::TimestampToText(Timestamp));
+
+                uint32_t Playcount = Statistics.GetPlaycount();
+
+                if (Playcount > 0)
+                    callback.set_property(STR_COMPONENT_NAME, 3.0, "Playcount", pfc::format_uint(Playcount));
 
                 if (Statistics.Rating > 0)
                     callback.set_property(STR_COMPONENT_NAME, 4.0, "Rating", pfc::format_uint(Statistics.Rating));

@@ -1,5 +1,5 @@
 
-/** $VER: FileOperationCallback.cpp (2024.07.22) **/
+/** $VER: FileOperationCallback.cpp (2024.10.09) **/
 
 #include "pch.h"
 
@@ -76,5 +76,5 @@ namespace
         }
     };
 
-    FB2K_SERVICE_FACTORY(FileOperationCallback);
+//  FB2K_SERVICE_FACTORY(FileOperationCallback); // Tracking by file path is disabled.
 }

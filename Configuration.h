@@ -1,4 +1,4 @@
-﻿
+
 /** $VER: Configuration.h (2024.07.24) P. Stuer **/
 
 #pragma once

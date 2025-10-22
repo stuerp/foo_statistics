@@ -1,5 +1,5 @@
 
-/** $VER: StatisticsManager.cpp (2024.08.23) **/
+/** $VER: StatisticsManager.cpp (2024.10.09) **/
 
 #include "pch.h"
 
@@ -52,39 +52,40 @@ statistics_t statistics_manager_t::GetStatistics(metadb_index_hash hash) noexcep
 
     GetMetaDbIndexManager()->get_user_data(MetaDbGUID, hash, Data);
 
-    if (Data.get_size() > 0)
+    if (Data.get_size() == 0)
+        return statistics_t(); // Return an empty record.
+
+    try
     {
-        try
+        stream_reader_formatter_simple_ref Reader(Data.get_ptr(), Data.get_size());
+
+        statistics_t Statistics;
+
+        // Read the timestamps.
+        uint32_t Size;
+
+        Reader >> Size;
+
+        for (uint32_t i = 0; i < Size; ++i)
         {
-            stream_reader_formatter_simple_ref Reader(Data.get_ptr(), Data.get_size());
+            uint64_t Timestamp;
 
-            statistics_t Statistics;
+            Reader >> Timestamp;
 
-            // Read the timestamps.
-            uint32_t Size;
-
-            Reader >> Size;
-
-            for (uint32_t i = 0; i < Size; ++i)
-            {
-                uint64_t Timestamp;
-
-                Reader >> Timestamp;
-
-                Statistics.Timestamps.push_back(Timestamp);
-            }
-
-            // Read the other statistics.
-            Reader >> Statistics.Rating;
-
-            return Statistics;
+            Statistics.Timestamps.push_back(Timestamp);
         }
-        catch (exception_io_data)
-        {
-        }
+
+        // Read the other statistics.
+        Reader >> Statistics.Rating;
+
+        return Statistics;
     }
+    catch (const exception_io_data & e)
+    {
+        console::print(STR_COMPONENT_BASENAME, " failed to get statistics from metadatabase: ", e.what());
 
-    return statistics_t(); // Return an empty record.
+        return statistics_t(); // Return an empty record.
+    }
 }
 
 /// <summary>
@@ -154,10 +155,9 @@ void statistics_manager_t::WriteToTags(metadb_handle_list_cref hTracks) noexcept
         metadb_index_hash Hash = 0;
 
         if (!Client->hashHandle(hTrack, Hash))
-            continue;
+            continue; // The track is not in the metadatabase.
 
         const auto FilePath = hTrack->get_path();
-        const auto SubSongIndex = hTrack->get_subsong_index();
 
         try
         {
@@ -172,6 +172,8 @@ void statistics_manager_t::WriteToTags(metadb_handle_list_cref hTracks) noexcept
                 input_entry::g_open_for_info_write_timeout(Writer, nullptr, FilePath, fb2k::noAbort, Timeout);
 
                 {
+                    const auto SubSongIndex = hTrack->get_subsong_index();
+
                     file_info_impl FileInfo;
 
                     Writer->get_info(SubSongIndex, FileInfo, fb2k::noAbort);
@@ -179,12 +181,19 @@ void statistics_manager_t::WriteToTags(metadb_handle_list_cref hTracks) noexcept
                     {
                         const auto Statistics = statistics_manager_t::GetStatistics(Hash);
 
-                        FileInfo.meta_set(TagTimestamps, Statistics.GetTimestamps());
+                        {
+                            pfc::string Timestamps = Statistics.GetTimestamps();
 
-                        if (Statistics.Rating != 0)
-                            FileInfo.meta_set(TagRating, pfc::format_uint(Statistics.Rating));
-                        else
-                            FileInfo.meta_remove_field(TagRating);
+                            if (!Timestamps.isEmpty())
+                                FileInfo.meta_set(TagTimestamps, Timestamps);
+                        }
+
+                        {
+                            if (Statistics.Rating != 0)
+                                FileInfo.meta_set(TagRating, pfc::format_uint(Statistics.Rating));
+                            else
+                                FileInfo.meta_remove_field(TagRating);
+                        }
 
                         if (_Configuration._RemoveTags)
                         {
@@ -218,15 +227,14 @@ void statistics_manager_t::ReadFromTags(metadb_handle_list_cref hTracks) noexcep
         metadb_index_hash Hash = 0;
 
         if (!Client->hashHandle(hTrack, Hash))
-            continue;
+            continue; // The track is not in the metadatabase.
+
+        auto Statistics = statistics_manager_t::GetStatistics(Hash);
 
         const auto FilePath = hTrack->get_path();
-        const auto SubSongIndex = hTrack->get_subsong_index();
 
         try
         {
-            auto Statistics = statistics_manager_t::GetStatistics(Hash);
-
             // Required to read from files being currently played. See file_lock_manager documentation for details.
             auto Lock = file_lock_manager::get()->acquire_read(FilePath, fb2k::noAbort);
 
@@ -235,50 +243,67 @@ void statistics_manager_t::ReadFromTags(metadb_handle_list_cref hTracks) noexcep
 
                 input_entry::g_open_for_info_read(Reader, nullptr, FilePath, fb2k::noAbort);
 
-                file_info_impl FileInfo;
-
-                Reader->get_info(SubSongIndex, FileInfo, fb2k::noAbort);
-
-                // Import the timestamps.
                 {
-                    Statistics.Timestamps.clear();
+                    const auto SubSongIndex = hTrack->get_subsong_index();
 
-                    const char * Timestamps = FileInfo.meta_get(TagTimestamps, 0);
+                    file_info_impl FileInfo;
 
-                    if (Timestamps != nullptr)
-                        Statistics.SetTimestamps(Timestamps);
-                }
+                    Reader->get_info(SubSongIndex, FileInfo, fb2k::noAbort);
 
-                // Import the rating.
-                {
-                    const char * Value = FileInfo.meta_get(TagRating, 0);
-
-                    if (Value != nullptr)
+                    // Import the timestamps.
                     {
-                        uint32_t Rating = (uint32_t) std::atoi(Value);
+                        const char * Timestamps = FileInfo.meta_get(TagTimestamps, 0);
 
-                        Statistics.Rating = (errno != ERANGE) ? Rating : 0;
+                        if (Timestamps != nullptr)
+                        {
+                            Statistics.Timestamps.clear();
+
+                            Statistics.SetTimestamps(Timestamps);
+                        }
                     }
-                    else
-                        Statistics.Rating = 0;
+
+                    // Import the rating.
+                    {
+                        const char * Value = FileInfo.meta_get(TagRating, 0);
+
+                        if (Value != nullptr)
+                        {
+                            uint32_t Rating = (uint32_t) std::atoi(Value);
+
+                            Statistics.Rating = (errno != ERANGE) ? Rating : 0;
+                        }
+                        else
+                            Statistics.Rating = 0;
+                    }
                 }
             }
 
-            {
-                auto Transaction = GetMetaDbIndexManager()->begin_transaction();
-
-                PutStatistics(Hash, Statistics, Transaction);
-
-                Transaction->commit();
-
-                // Signals all components that the metadata for the specified track has been altered.
-                GetMetaDbIndexManager()->dispatch_refresh(MetaDbGUID, Hash);
-            }
+            console::print(STR_COMPONENT_BASENAME, " read tags from \"", FilePath, "\"");
         }
         catch (const std::exception & e)
         {
             console::print(STR_COMPONENT_BASENAME " failed to read tags from \"", FilePath, "\": ", e.what());
+
+            return;
         }
+
+        try
+        {
+            auto Transaction = GetMetaDbIndexManager()->begin_transaction();
+
+            PutStatistics(Hash, Statistics, Transaction);
+
+            Transaction->commit();
+
+            console::print(STR_COMPONENT_BASENAME, " updated metadata for \"", FilePath, "\"");
+        }
+        catch (const std::exception & e)
+        {
+            console::print(STR_COMPONENT_BASENAME " failed to update metadata for \"", FilePath, "\": ", e.what());
+        }
+
+        // Signals all components that the metadata for the specified track has been altered.
+        GetMetaDbIndexManager()->dispatch_refresh(MetaDbGUID, Hash);
     }
 }
 

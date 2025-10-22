@@ -1,5 +1,5 @@
 
-/** $VER: Resources.h (2024.08.23) P. Stuer **/
+/** $VER: Resources.h (2025.10.22) P. Stuer **/
 
 #pragma once
 
@@ -9,12 +9,12 @@
 #define NUM_FILE_MAJOR          0
 #define NUM_FILE_MINOR          1
 #define NUM_FILE_PATCH          3
-#define NUM_FILE_PRERELEASE     0
+#define NUM_FILE_PRERELEASE     2
 
 #define NUM_PRODUCT_MAJOR       0
 #define NUM_PRODUCT_MINOR       1
 #define NUM_PRODUCT_PATCH       3
-#define NUM_PRODUCT_PRERELEASE  0
+#define NUM_PRODUCT_PRERELEASE  2
 
 /** Component specific **/
 
@@ -23,7 +23,7 @@
 #define STR_COMPONENT_BASENAME      "foo_statistics"
 #define STR_COMPONENT_FILENAME      STR_COMPONENT_BASENAME ".dll"
 #define STR_COMPONENT_COMPANY_NAME  ""
-#define STR_COMPONENT_COPYRIGHT     "Copyright (c) 2024 P. Stuer. All rights reserved."
+#define STR_COMPONENT_COPYRIGHT     "Copyright (c) 2024-2025 P. Stuer. All rights reserved."
 #define STR_COMPONENT_COMMENTS      ""
 #define STR_COMPONENT_DESCRIPTION   "Collects and maintains playback statistics."
 

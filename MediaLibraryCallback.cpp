@@ -1,5 +1,5 @@
 
-/** $VER: MediaLibraryCallback.cpp (2024.08.23) **/
+/** $VER: MediaLibraryCallback.cpp (2025.10.22) **/
 
 #include "pch.h"
 
@@ -63,15 +63,18 @@ namespace
             (
                 [this]
                 {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(5000)); // Wait 5s
 
                     fb2k::inMainThread
                     (
                         [this]
                         {
-                            auto Index = search_index_manager::get()->get_library_index();
+                            if (core_api::are_services_available())
+                            {
+                                auto Index = search_index_manager::get()->get_library_index();
 
-                            OnItemsAdded(Index);
+                                OnItemsAdded(Index);
+                            }
                         }
                     );
                 }

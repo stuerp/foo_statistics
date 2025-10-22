@@ -1,5 +1,5 @@
 
-/** $VER: Resources.rc (2024.07.24) P. Stuer **/
+/** $VER: Resources.rc (2025.05.14) P. Stuer **/
 
 #include "Resources.h"
 
@@ -47,8 +47,8 @@ filesubtype     VFT2_UNKNOWN
 #include "PreferencesLayout.h"
 
 IDD_PREFERENCES dialogex 0, 0, 0, 0
-style DS_SETFONT | WS_CHILD
-font 8, "Segoe UI", 400, 0, 1
+style DS_SHELLFONT | WS_CHILD
+font 8, "MS Shell Dlg", 400, 0, 1
 {
     rtext       "Pin to:",                          IDC_STATIC,             X_A11, Y_A11 + 2, W_A11, H_A11
     edittext                                        IDC_PIN_TO,             X_A12, Y_A12,     W_A12, H_A12, ES_AUTOHSCROLL | WS_TABSTOP
