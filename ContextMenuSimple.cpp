@@ -13,6 +13,7 @@
 
 namespace
 {
+    #pragma warning(disable: 5027) // 'type': move assignment operator was implicitly defined as deleted
     struct menu_item_t
     {
         const char * Text;
