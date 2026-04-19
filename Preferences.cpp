@@ -84,6 +84,7 @@ public:
 
         _Configuration._WriteToTags = (SendDlgItemMessageW(IDC_WRITE_TO_TAGS, BM_GETCHECK) == BST_CHECKED) ? WriteToTags::Always : WriteToTags::Never;
 
+        _Configuration._WriteLegacyTags = (SendDlgItemMessageW(IDC_WRITE_LEGACY_TAGS, BM_GETCHECK) == BST_CHECKED);
         _Configuration._RemoveTags = (SendDlgItemMessageW(IDC_REMOVE_TAGS, BM_GETCHECK) == BST_CHECKED);
 
         {
@@ -120,6 +121,7 @@ public:
         COMMAND_HANDLER_EX(IDC_RETENTION_UNIT, CBN_SELCHANGE, OnSelectionChanged) // This also handles LBN_SELCHANGE
 
         COMMAND_HANDLER_EX(IDC_WRITE_TO_TAGS, BN_CLICKED, OnButtonClicked)
+        COMMAND_HANDLER_EX(IDC_WRITE_LEGACY_TAGS, BN_CLICKED, OnButtonClicked)
         COMMAND_HANDLER_EX(IDC_REMOVE_TAGS, BN_CLICKED, OnButtonClicked)
 
         COMMAND_HANDLER_EX(IDC_TAGS_TO_REMOVE, EN_CHANGE, OnEditChange)
@@ -164,6 +166,7 @@ private:
         }
 
         ((CCheckBox) GetDlgItem(IDC_WRITE_TO_TAGS)).SetCheck((_Configuration._WriteToTags == WriteToTags::Always) ? BST_CHECKED : BST_UNCHECKED);
+        ((CCheckBox) GetDlgItem(IDC_WRITE_LEGACY_TAGS)).SetCheck(_Configuration._WriteLegacyTags ? BST_CHECKED : BST_UNCHECKED);
         ((CCheckBox) GetDlgItem(IDC_REMOVE_TAGS)).SetCheck(_Configuration._RemoveTags ? BST_CHECKED : BST_UNCHECKED);
 
         {
@@ -235,6 +238,9 @@ private:
             return true;
 
         if (SendDlgItemMessageW(IDC_WRITE_TO_TAGS, BM_GETCHECK) != ((_Configuration._WriteToTags == WriteToTags::Always) ? BST_CHECKED : BST_UNCHECKED))
+            return true;
+
+        if (SendDlgItemMessageW(IDC_WRITE_LEGACY_TAGS, BM_GETCHECK) != (_Configuration._WriteLegacyTags ? BST_CHECKED : BST_UNCHECKED))
             return true;
 
         if (SendDlgItemMessageW(IDC_REMOVE_TAGS, BM_GETCHECK) != (_Configuration._RemoveTags ? BST_CHECKED : BST_UNCHECKED))

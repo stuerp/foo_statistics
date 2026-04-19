@@ -116,9 +116,14 @@ To create the component first build the x86 configuration and next the x64 confi
 
 ## Change Log
 
+### v0.1.3.3, 2026-04-18
+
+* Added: Option to add tags from the official foo_playcount component.
+* Fixed: Checking for missing statistics tags did not work correctly.
+
 ### v0.1.3.0, 2024-08-23
 
-* FIXED: Tracks that are not part of the media library received play timestamps.
+* Fixed: Tracks that are not part of the media library received play timestamps.
 
 ### v0.1.2.0, 2024-08-10
 

@@ -5,17 +5,23 @@
 
 #include "MetaDbIndexClient.h"
 #include "StatisticsManager.h"
+#include "Configuration.h"
 #include "Resources.h"
 #include "GUIDS.h"
+
+#include <sdk\titleformat.h>
 
 #pragma hdrstop
 
 /// <summary>
 /// Initializes a new instance.
 /// </summary>
-MetaDbIndexClient::MetaDbIndexClient() : _Hasher(hasher_md5::get())
+metadb_index_client_t::metadb_index_client_t() : _Hasher(hasher_md5::get())
 {
     titleformat_compiler::get()->compile_safe(_PinToScript, _Configuration._PinTo);
+
+    if (!_PinToScript.is_valid())
+        console::print(STR_COMPONENT_BASENAME " failed to compile the Pin To script of the meta database index client.");
 }
 
 #pragma region metadb_index_client
@@ -23,7 +29,7 @@ MetaDbIndexClient::MetaDbIndexClient() : _Hasher(hasher_md5::get())
 /// <summary>
 /// Transforms the track information (location + metadata) to a hash for the Meta database index manager.
 /// </summary>
-metadb_index_hash MetaDbIndexClient::transform(const file_info & fileInfo, const playable_location & location)
+metadb_index_hash metadb_index_client_t::transform(const file_info & fileInfo, const playable_location & location)
 {
     pfc::string s;
 
@@ -39,18 +45,20 @@ metadb_index_hash MetaDbIndexClient::transform(const file_info & fileInfo, const
 /// <summary>
 /// Gets the singleton instance of the service.
 /// </summary>
-MetaDbIndexClient * MetaDbIndexClient::Instance() noexcept
+metadb_index_client_t * metadb_index_client_t::Instance() noexcept
 {
-    static MetaDbIndexClient * _Singleton = new service_impl_single_t<MetaDbIndexClient>();
+    static metadb_index_client_t * Singleton = new service_impl_single_t<metadb_index_client_t>();
 
-    return _Singleton;
+    return Singleton;
 }
 
 /// <summary>
 /// Initializes the service.
 /// </summary>
-void MetaDbIndexClient::Initialize() noexcept
+void metadb_index_client_t::Initialize() noexcept
 {
+    console::print(STR_COMPONENT_BASENAME " is initializing the meta database index client...");
+
     auto Manager = statistics_manager_t::GetMetaDbIndexManager();
 
 //  Manager->erase_orphaned_data(GUIDs::MetaDbGUID); // Deletes no longer needed index user data files.
@@ -63,7 +71,7 @@ void MetaDbIndexClient::Initialize() noexcept
     {
         Manager->remove(MetaDbGUID);
 
-        console::print(STR_COMPONENT_BASENAME " failed to initialize database: ", e.what());
+        console::print(STR_COMPONENT_BASENAME " failed to initialize the meta database index client: ", e.what());
 
         return;
     }
@@ -76,7 +84,7 @@ void MetaDbIndexClient::Initialize() noexcept
 /// <summary>
 /// Hashes the specified path name.
 /// </summary>
-metadb_index_hash MetaDbIndexClient::HashPathName(pfc::string pathName) noexcept
+metadb_index_hash metadb_index_client_t::HashPathName(pfc::string pathName) noexcept
 {
     return HashString(pathName + "|0");
 }
@@ -84,7 +92,7 @@ metadb_index_hash MetaDbIndexClient::HashPathName(pfc::string pathName) noexcept
 /// <summary>
 /// Hashes the specified string.
 /// </summary>
-metadb_index_hash MetaDbIndexClient::HashString(pfc::string s) noexcept
+metadb_index_hash metadb_index_client_t::HashString(pfc::string s) noexcept
 {
     return _Hasher->process_single_string(s).xorHalve(); // Make an MD5 hash of the string, then reduce it to 64-bit metadb_index_hash.
 }

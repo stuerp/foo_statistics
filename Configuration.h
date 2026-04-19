@@ -5,9 +5,8 @@
 
 #include "pch.h"
 
-#include <SDK/titleformat.h>
-#include <SDK/system_time_keeper.h>
-#include <SDK/file.h>
+#include <sdk\titleformat.h>
+#include <sdk\file.h>
 
 enum RetentionUnit : uint32_t
 {
@@ -57,6 +56,7 @@ public:
     RetentionUnit _RetentionUnit;
 
     WriteToTags _WriteToTags = WriteToTags::Always;
+    bool _WriteLegacyTags;
     bool _RemoveTags;
     pfc::string _TagsToRemove;
 

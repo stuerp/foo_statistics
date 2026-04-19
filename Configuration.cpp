@@ -1,15 +1,15 @@
 
-/** $VER: configuration.cpp (2024.07.24) P. Stuer **/
+/** $VER: configuration.cpp (2026.04.19) P. Stuer **/
 
 #include "pch.h"
 
 #include "Configuration.h"
 #include "Resources.h"
 
-#include <SDK/file.h>
-#include <SDK/advconfig_impl.h>
-#include <SDK/playback_control.h>
-#include <SDK/cfg_var.h>
+#include <sdk\file.h>
+#include <sdk\system_time_keeper.h>
+#include <sdk\playback_control.h>
+#include <sdk\cfg_var.h>
 
 #pragma hdrstop
 
@@ -19,6 +19,7 @@ static cfg_var_modern::cfg_string   ThresholdFormatCfg  ({ 0xff7d2dd4, 0x6d86, 0
 static cfg_var_modern::cfg_int      RetentionValueCfg   ({ 0xd287b736, 0x6ac2, 0x49fc, { 0xa4, 0x6f, 0xbf, 0xac, 0x7e, 0x2e, 0xac, 0xc3 } }, 0);
 static cfg_var_modern::cfg_int      RetentionUnitCfg    ({ 0xd337ea2c, 0xa918, 0x4771, { 0xb2, 0xcd, 0xf1, 0x50, 0x59, 0xf6, 0x04, 0x37 } }, 0);
 static cfg_var_modern::cfg_int      WriteToTagsCfg      ({ 0x28d2ef5c, 0x6a42, 0x4a92, { 0xb8, 0xe5, 0xe1, 0x20, 0x28, 0xb7, 0xae, 0x03 } }, 0);
+static cfg_var_modern::cfg_bool     AddLegacyTagsCfg    ({ 0x52443bd3, 0xc05c, 0x45aa, { 0x86, 0xe3, 0x11, 0xcb, 0x31, 0x34, 0xf0, 0x4a } }, true);
 static cfg_var_modern::cfg_bool     RemoveTagsCfg       ({ 0x1747901f, 0x878f, 0x48fe, { 0xbe, 0xae, 0x3d, 0x7c, 0x16, 0x78, 0x26, 0x18 } }, false);
 static cfg_var_modern::cfg_string   TagsToRemoveCfg     ({ 0xc4c0be8a, 0x9c22, 0x46c3, { 0xbf, 0xc2, 0xee, 0x9c, 0x01, 0xe4, 0xcb, 0xd3 } }, "");
 
@@ -43,6 +44,7 @@ void configuration_t::Reset() noexcept
 
     _WriteToTags = WriteToTags::Always;
 
+    _WriteLegacyTags = true;
     _RemoveTags = false;
     _TagsToRemove = "added_timestamp; first_played_timestamp; last_played_timestamp; play_count"; // foo_playcount
 
@@ -61,6 +63,8 @@ configuration_t & configuration_t::operator=(const configuration_t & other)
     _RetentionUnit      = other._RetentionUnit;
 
     _WriteToTags        = other._WriteToTags;
+
+    _WriteLegacyTags      = other._WriteLegacyTags;
 
     _RemoveTags         = other._RemoveTags;
     _TagsToRemove       = other._TagsToRemove;
@@ -89,6 +93,8 @@ void configuration_t::Read() noexcept
         _RetentionUnit   = (RetentionUnit) (int) RetentionUnitCfg;
 
         _WriteToTags     = (WriteToTags) (int) WriteToTagsCfg;
+
+        _WriteLegacyTags   = AddLegacyTagsCfg;
 
         _RemoveTags      = RemoveTagsCfg;
         _TagsToRemove    = TagsToRemoveCfg;
@@ -119,6 +125,8 @@ void configuration_t::Write() const noexcept
         RetentionUnitCfg   = _RetentionUnit;
 
         WriteToTagsCfg     = _WriteToTags;
+
+        AddLegacyTagsCfg   = _WriteLegacyTags;
 
         RemoveTagsCfg      = _RemoveTags;
         TagsToRemoveCfg    = _TagsToRemove;

@@ -1,26 +1,24 @@
 
-/** $VER: MetaDbIndexClient.h (2024.08.23) **/
+/** $VER: MetaDbIndexClient.h (2026.03.14) **/
 
 #include "pch.h"
-
-#include <SDK/titleformat.h>
 
 #pragma once
 
 /// <summary>
 /// Transforms track information (location + metadata) to a metadb_index_manager hash to which our data gets pinned.
 /// </summary>
-class MetaDbIndexClient : public metadb_index_client
+class metadb_index_client_t : public metadb_index_client
 {
 public:
-    MetaDbIndexClient();
+    metadb_index_client_t();
 
-    MetaDbIndexClient(const MetaDbIndexClient &) = delete;
-    MetaDbIndexClient(MetaDbIndexClient &&) = delete;
-    MetaDbIndexClient & operator=(const MetaDbIndexClient &) = delete;
-    MetaDbIndexClient & operator=(MetaDbIndexClient &&) = delete;
+    metadb_index_client_t(const metadb_index_client_t &) = delete;
+    metadb_index_client_t(metadb_index_client_t &&) = delete;
+    metadb_index_client_t & operator=(const metadb_index_client_t &) = delete;
+    metadb_index_client_t & operator=(metadb_index_client_t &&) = delete;
 
-    virtual ~MetaDbIndexClient() { };
+    virtual ~metadb_index_client_t() noexcept { };
 
     #pragma region metadb_index_client
 
@@ -28,7 +26,7 @@ public:
 
     #pragma endregion
 
-    static MetaDbIndexClient * Instance() noexcept;
+    static metadb_index_client_t * Instance() noexcept;
     static void Initialize() noexcept;
 
     metadb_index_hash HashPathName(pfc::string pathName) noexcept;

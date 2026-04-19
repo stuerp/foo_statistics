@@ -1,5 +1,5 @@
 
-/** $VER: StatisticsManager.cpp (2024.10.09) **/
+/** $VER: StatisticsManager.cpp (2026.04.18) **/
 
 #include "pch.h"
 
@@ -11,13 +11,11 @@
 #include "MetaDbIndexClient.h"
 #include "Tags.h"
 
-#include <SDK/input.h>
-#include <SDK/file_lock_manager.h>
-#include <SDK/file_info_impl.h>
+#include <sdk\input.h>
+#include <sdk\file_lock_manager.h>
+#include <sdk\file_info_impl.h>
 
-#include <pfc/filetimetools.h>
-
-#include <ranges>
+#include <pfc\filetimetools.h>
 
 #pragma hdrstop
 
@@ -44,7 +42,7 @@ void statistics_manager_t::OnItemPlayed(const metadb_handle_ptr & hTrack) noexce
 }
 
 /// <summary>
-/// Gets the statistics from the metadatabase.
+/// Gets the statistics from the metadata db.
 /// </summary>
 statistics_t statistics_manager_t::GetStatistics(metadb_index_hash hash) noexcept
 {
@@ -75,31 +73,33 @@ statistics_t statistics_manager_t::GetStatistics(metadb_index_hash hash) noexcep
             Statistics.Timestamps.push_back(Timestamp);
         }
 
-        // Read the other statistics.
+        // Read the rating.
         Reader >> Statistics.Rating;
 
         return Statistics;
     }
     catch (const exception_io_data & e)
     {
-        console::print(STR_COMPONENT_BASENAME, " failed to get statistics from metadatabase: ", e.what());
+        console::print(STR_COMPONENT_BASENAME, " failed to read statistics from metadata db: ", e.what());
 
         return statistics_t(); // Return an empty record.
     }
 }
 
 /// <summary>
-/// Puts the statistics in the metadatabase.
+/// Puts the statistics in the metadata db.
 /// </summary>
 void statistics_manager_t::PutStatistics(metadb_index_hash hash, const statistics_t & statistics, const metadb_index_transaction::ptr & transaction) noexcept
 {
     stream_writer_formatter_simple Writer;
 
+    // Write the timestamps.
     Writer << (uint32_t) statistics.Timestamps.size();
 
     for (const auto & Timestamp : statistics.Timestamps)
         Writer << Timestamp;
 
+    // Write the rating.
     Writer << statistics.Rating;
 
     transaction->set_user_data(MetaDbGUID, hash, Writer.m_buffer.get_ptr(), Writer.m_buffer.get_size());
@@ -148,16 +148,18 @@ void statistics_manager_t::WriteTrack(const metadb_handle_ptr & hTrack) noexcept
 /// </summary>
 void statistics_manager_t::WriteToTags(metadb_handle_list_cref hTracks) noexcept
 {
-    auto Client = MetaDbIndexClient::Instance();
+    auto Client = metadb_index_client_t::Instance();
 
     for (const auto & hTrack : hTracks)
     {
         metadb_index_hash Hash = 0;
 
         if (!Client->hashHandle(hTrack, Hash))
-            continue; // The track is not in the metadatabase.
+            continue; // The track is not in the meta database.
 
         const auto FilePath = hTrack->get_path();
+
+        console::print(STR_COMPONENT_BASENAME, " is writing tags to \"", FilePath, "\".");
 
         try
         {
@@ -185,12 +187,47 @@ void statistics_manager_t::WriteToTags(metadb_handle_list_cref hTracks) noexcept
                             pfc::string Timestamps = Statistics.GetTimestamps();
 
                             if (!Timestamps.isEmpty())
+                            {
                                 FileInfo.meta_set(TagTimestamps, Timestamps);
+
+                                // Add legacy tags for compatibility. Don't touch existing tags.
+                                if (_Configuration._WriteLegacyTags)
+                                {
+                                    if (!FileInfo.meta_exists_ex(TagAddedTimestampLegacy, std::strlen(TagAddedTimestampLegacy)))
+                                    {
+                                        FileInfo.meta_set(TagAddedTimestampLegacy, pfc::format_uint(Statistics.Timestamps[0]));
+
+                                        console::print(STR_COMPONENT_BASENAME, " added legacy tag " TagAddedTimestampLegacy ".");
+                                    }
+
+                                    if (!FileInfo.meta_exists_ex(TagFirstPlayedTimestampLegacy, std::strlen(TagFirstPlayedTimestampLegacy)) && (Statistics.Timestamps.size() > 1))
+                                    {
+                                        FileInfo.meta_set(TagFirstPlayedTimestampLegacy, pfc::format_uint(Statistics.Timestamps[1]));
+                                        FileInfo.meta_set(TagPlayCountLegacy, pfc::format_uint(Statistics.Timestamps.size() - 1));
+
+                                        console::print(STR_COMPONENT_BASENAME, " added legacy tag " TagFirstPlayedTimestampLegacy ".");
+                                    }
+
+                                    if (!FileInfo.meta_exists_ex(TagLastPlayedTimestampLegacy, std::strlen(TagLastPlayedTimestampLegacy)) && (Statistics.Timestamps.size() > 2))
+                                    {
+                                        FileInfo.meta_set(TagLastPlayedTimestampLegacy, pfc::format_uint(Statistics.Timestamps.back()));
+
+                                        console::print(STR_COMPONENT_BASENAME, " added legacy tag " TagLastPlayedTimestampLegacy ".");
+                                    }
+                                }
+                            }
+                            else
+                                console::print(STR_COMPONENT_BASENAME, " failed to find timestamps for \"", FilePath, "\".");
                         }
 
                         {
                             if (Statistics.Rating != 0)
+                            {
                                 FileInfo.meta_set(TagRating, pfc::format_uint(Statistics.Rating));
+
+                                if (_Configuration._WriteLegacyTags)
+                                    FileInfo.meta_set("RATING", pfc::format_uint(Statistics.Rating));
+                            }
                             else
                                 FileInfo.meta_remove_field(TagRating);
                         }
@@ -220,18 +257,20 @@ void statistics_manager_t::WriteToTags(metadb_handle_list_cref hTracks) noexcept
 /// </summary>
 void statistics_manager_t::ReadFromTags(metadb_handle_list_cref hTracks) noexcept
 {
-    auto Client = MetaDbIndexClient::Instance();
+    auto Client = metadb_index_client_t::Instance();
 
     for (const auto & hTrack : hTracks)
     {
         metadb_index_hash Hash = 0;
 
         if (!Client->hashHandle(hTrack, Hash))
-            continue; // The track is not in the metadatabase.
+            continue; // The track is not in the metadata db.
 
         auto Statistics = statistics_manager_t::GetStatistics(Hash);
 
         const auto FilePath = hTrack->get_path();
+
+        console::print(STR_COMPONENT_BASENAME, " is reading tags from \"", FilePath, "\".");
 
         try
         {
@@ -277,8 +316,6 @@ void statistics_manager_t::ReadFromTags(metadb_handle_list_cref hTracks) noexcep
                     }
                 }
             }
-
-            console::print(STR_COMPONENT_BASENAME, " read tags from \"", FilePath, "\"");
         }
         catch (const std::exception & e)
         {
@@ -295,7 +332,7 @@ void statistics_manager_t::ReadFromTags(metadb_handle_list_cref hTracks) noexcep
 
             Transaction->commit();
 
-            console::print(STR_COMPONENT_BASENAME, " updated metadata for \"", FilePath, "\"");
+            console::print(STR_COMPONENT_BASENAME, " updated metadata for \"", FilePath, "\".");
         }
         catch (const std::exception & e)
         {
@@ -310,9 +347,9 @@ void statistics_manager_t::ReadFromTags(metadb_handle_list_cref hTracks) noexcep
 /// <summary>
 /// Imports the tags of the official foo_playcount component.
 /// </summary>
-void statistics_manager_t::ImportFromPlayCount(metadb_handle_list_cref hTracks) noexcept
+void statistics_manager_t::ImportFromLegacyTags(metadb_handle_list_cref hTracks) noexcept
 {
-    auto Client = MetaDbIndexClient::Instance();
+    auto Client = metadb_index_client_t::Instance();
 
     for (const auto & hTrack : hTracks)
     {
@@ -343,36 +380,36 @@ void statistics_manager_t::ImportFromPlayCount(metadb_handle_list_cref hTracks) 
                 // Import the timestamps.
                 {
                     // Import the Added timestamp.
-                    uint64_t Timestamp = (uint64_t) statistics_manager_t::GetNumber(FileInfo, "added_timestamp");
+                    uint64_t Timestamp = (uint64_t) statistics_manager_t::GetNumber(FileInfo, TagAddedTimestampLegacy);
 
                     if (Timestamp != 0)
                     {
                         Statistics.SetAddedTimestamp(Timestamp);
 
                         // Import the First Played timestamp.
-                        uint64_t FirstPlayed = (uint64_t) statistics_manager_t::GetNumber(FileInfo, "first_played_timestamp");
+                        uint64_t FirstPlayed = (uint64_t) statistics_manager_t::GetNumber(FileInfo, TagFirstPlayedTimestampLegacy);
 
                         if (FirstPlayed != 0)
                         {
                             Statistics.SetFirstPlayedTimestamp(FirstPlayed);
 
-                            uint64_t Playcount = (uint64_t) statistics_manager_t::GetNumber(FileInfo, "play_count");
+                            uint64_t PlayCount = (uint64_t) statistics_manager_t::GetNumber(FileInfo, TagPlayCountLegacy);
 
-                            if (Playcount > 1)
+                            if (PlayCount > 1)
                             {
                                 // Import the Last Played timestamp.
-                                uint64_t LastPlayed = (uint64_t) statistics_manager_t::GetNumber(FileInfo, "last_played_timestamp");
+                                uint64_t LastPlayed = (uint64_t) statistics_manager_t::GetNumber(FileInfo, TagLastPlayedTimestampLegacy);
 
                                 if (LastPlayed != 0)
                                 {
-                                    if (Playcount > 2)
+                                    if (PlayCount > 2)
                                     {
                                         // Add the linear interpolated timestamps.
-                                        uint64_t Delta = (LastPlayed - FirstPlayed) / (Playcount - 1);
+                                        uint64_t Delta = (LastPlayed - FirstPlayed) / (PlayCount - 1);
 
                                         Timestamp = FirstPlayed;
 
-                                        for (; Playcount > 2; --Playcount)
+                                        for (; PlayCount > 2; --PlayCount)
                                         {
                                             Timestamp += Delta;
 
@@ -402,11 +439,11 @@ void statistics_manager_t::ImportFromPlayCount(metadb_handle_list_cref hTracks) 
                 GetMetaDbIndexManager()->dispatch_refresh(MetaDbGUID, Hash);
             }
 
-            console::print(STR_COMPONENT_BASENAME, " has migrated tags from \"", FilePath, "\".");
+            console::print(STR_COMPONENT_BASENAME, " has imported tags from \"", FilePath, "\".");
         }
         catch (const std::exception & e)
         {
-            console::print(STR_COMPONENT_BASENAME " failed to migrate tags from \"", FilePath, "\": ", e.what());
+            console::print(STR_COMPONENT_BASENAME " failed to import tags from \"", FilePath, "\": ", e.what());
         }
     }
 }
@@ -454,7 +491,7 @@ void statistics_manager_t::SetRating(metadb_handle_list_cref hTracks, uint32_t r
 /// </summary>
 void statistics_manager_t::Process(metadb_handle_list_cref hTracks, std::function<void (statistics_t & s)> callback)
 {
-    auto Client = MetaDbIndexClient::Instance();
+    auto Client = metadb_index_client_t::Instance();
 
     hash_list_t TracksToRefresh;
     hash_set_t Hashes;
@@ -497,4 +534,19 @@ void statistics_manager_t::Refresh(const hash_list_t & tracksToRefresh)
         return;
 
     GetMetaDbIndexManager()->dispatch_refresh(MetaDbGUID, tracksToRefresh);
+}
+
+/// <summary>
+/// Gets a numeric value from a tag.
+/// </summary>
+int64_t statistics_manager_t::GetNumber(file_info_impl & fileInfo, const char * name) noexcept
+{
+    const char * Value = fileInfo.meta_get(name, 0);
+
+    if (Value == nullptr)
+        return 0;
+
+    int64_t Number = ::_atoi64(Value);
+
+    return (errno != ERANGE) ? Number : 0;
 }

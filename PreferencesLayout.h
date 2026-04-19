@@ -1,5 +1,5 @@
 
-/** $VER: PreferencesLayout.h (2024.07.24) **/
+/** $VER: PreferencesLayout.h (2026.04.19) **/
 
 #pragma once
 
@@ -83,17 +83,23 @@
 #define W_A50   W_A00 - X_A50
 #define H_A50   H_LBL
 
-// Checkbox: Remove tags
+// Checkbox: Write legacy tags
 #define X_A51   85 + IX
 #define Y_A51   Y_A50 + H_A50 + IY
 #define W_A51   W_A00 - X_A51
 #define H_A51   H_LBL
 
+// Checkbox: Remove tags
+#define X_A52   85 + IX
+#define Y_A52   Y_A51 + H_A51 + IY
+#define W_A52   W_A00 - X_A52
+#define H_A52   H_LBL
+
 #pragma region Tags to remove
 
 // Label
 #define X_A30   0
-#define Y_A30   Y_A51 + H_A51 + IY
+#define Y_A30   Y_A52 + H_A52 + IY
 #define W_A30   85
 #define H_A30   H_LBL
 

@@ -71,7 +71,7 @@ struct statistics_t
             Timestamps.push_back(timestamp); // Only add a play timestamp if the track is in the media library.
     }
 
-    uint32_t GetPlaycount() const noexcept
+    uint32_t GetPlayCount() const noexcept
     {
         return (Timestamps.size() > 1) ? (uint32_t) Timestamps.size() - 1 : 0;
     }

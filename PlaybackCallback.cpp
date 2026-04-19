@@ -3,9 +3,9 @@
 
 #include "pch.h"
 
-#include <SDK/playback_control.h>
-#include <SDK/play_callback.h>
-#include <SDK/titleformat.h>
+#include <sdk\playback_control.h>
+#include <sdk\play_callback.h>
+//#include <SDK/titleformat.h>
 
 #include "Configuration.h"
 #include "StatisticsManager.h"
@@ -21,17 +21,17 @@ namespace
     /// <summary>
     /// Handles the playback events we're subscribed to.
     /// </summary>
-    class PlaybackCallback : public play_callback_static
+    class playback_callback_t : public play_callback_static
     {
     public:
-        PlaybackCallback() noexcept { };
+        playback_callback_t() noexcept { };
 
-        PlaybackCallback(const PlaybackCallback &) = delete;
-        PlaybackCallback(PlaybackCallback &&) = delete;
-        PlaybackCallback & operator=(const PlaybackCallback &) = delete;
-        PlaybackCallback & operator=(PlaybackCallback &&) = delete;
+        playback_callback_t(const playback_callback_t &) = delete;
+        playback_callback_t(playback_callback_t &&) = delete;
+        playback_callback_t & operator=(const playback_callback_t &) = delete;
+        playback_callback_t & operator=(playback_callback_t &&) = delete;
 
-        virtual ~PlaybackCallback() { };
+        virtual ~playback_callback_t() { };
 
         /// <summary>
         /// Controls which methods your callback wants called.
@@ -145,7 +145,7 @@ namespace
     /// <summary>
     /// Prints a playback progress message on the console.
     /// </summary>
-    void PlaybackCallback::PrintProgress() noexcept
+    void playback_callback_t::PrintProgress() noexcept
     {
 /*
         if (_TitleFormatScript.is_empty())
@@ -172,5 +172,5 @@ namespace
 */
     }
 
-    FB2K_SERVICE_FACTORY(PlaybackCallback);
+    FB2K_SERVICE_FACTORY(playback_callback_t);
 }

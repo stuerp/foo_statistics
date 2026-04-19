@@ -1,5 +1,5 @@
 
-/** $VER: Resources.h (2025.10.22) P. Stuer **/
+/** $VER: Resources.h (2026.04.19) P. Stuer **/
 
 #pragma once
 
@@ -9,12 +9,12 @@
 #define NUM_FILE_MAJOR          0
 #define NUM_FILE_MINOR          1
 #define NUM_FILE_PATCH          3
-#define NUM_FILE_PRERELEASE     2
+#define NUM_FILE_PRERELEASE     3
 
 #define NUM_PRODUCT_MAJOR       0
 #define NUM_PRODUCT_MINOR       1
 #define NUM_PRODUCT_PATCH       3
-#define NUM_PRODUCT_PRERELEASE  2
+#define NUM_PRODUCT_PRERELEASE  3
 
 /** Component specific **/
 
@@ -23,9 +23,12 @@
 #define STR_COMPONENT_BASENAME      "foo_statistics"
 #define STR_COMPONENT_FILENAME      STR_COMPONENT_BASENAME ".dll"
 #define STR_COMPONENT_COMPANY_NAME  ""
-#define STR_COMPONENT_COPYRIGHT     "Copyright (c) 2024-2025 P. Stuer. All rights reserved."
+#define STR_COMPONENT_COPYRIGHT     "Copyright (c) 2024-2026 P. Stuer. All rights reserved."
 #define STR_COMPONENT_COMMENTS      ""
 #define STR_COMPONENT_DESCRIPTION   "Collects and maintains playback statistics."
+#define STR_COMPONENT_URL           "https://github.com/stuerp/" STR_COMPONENT_BASENAME
+
+#define STR_RELEASE_TAG             ""
 
 /** Generic **/
 
@@ -35,14 +38,14 @@
 #define STR_COPYRIGHT           TEXT(STR_COMPONENT_COPYRIGHT)
 
 #define STR_FILE_NAME           TEXT(STR_COMPONENT_FILENAME)
-#define STR_FILE_VERSION        TOSTRING(NUM_FILE_MAJOR) TEXT(".") TOSTRING(NUM_FILE_MINOR) TEXT(".") TOSTRING(NUM_FILE_PATCH) TEXT(".") TOSTRING(NUM_FILE_PRERELEASE)
+#define STR_FILE_VERSION        TEXT(STR_COMPONENT_VERSION)
 #define STR_FILE_DESCRIPTION    TEXT(STR_COMPONENT_DESCRIPTION)
 
 #define STR_PRODUCT_NAME        STR_INTERNAL_NAME
-#define STR_PRODUCT_VERSION     TOSTRING(NUM_PRODUCT_MAJOR) TEXT(".") TOSTRING(NUM_PRODUCT_MINOR) TEXT(".") TOSTRING(NUM_PRODUCT_PATCH) TEXT(".") TOSTRING(NUM_PRODUCT_PRERELEASE)
+#define STR_PRODUCT_VERSION     TEXT(TOSTRING(NUM_PRODUCT_MAJOR)) TEXT(".") TEXT(TOSTRING(NUM_PRODUCT_MINOR)) TEXT(".") TEXT(TOSTRING(NUM_PRODUCT_PATCH)) TEXT(".") TEXT(TOSTRING(NUM_PRODUCT_PRERELEASE)) TEXT(STR_RELEASE_TAG)
 
 #define STR_ABOUT_NAME          STR_INTERNAL_NAME
-#define STR_ABOUT_WEB           TEXT("https://github.com/stuerp/") STR_COMPONENT_BASENAME
+#define STR_ABOUT_WEB           TEXT(STR_COMPONENT_URL)
 #define STR_ABOUT_EMAIL         TEXT("mailto:peter.stuer@outlook.com")
 
 /** Window **/
@@ -60,6 +63,7 @@
 #define IDC_RETENTION_UNIT                  1006
 
 #define IDC_WRITE_TO_TAGS                   1050
-#define IDC_REMOVE_TAGS                     1051
+#define IDC_WRITE_LEGACY_TAGS               1051
+#define IDC_REMOVE_TAGS                     1052
 
-#define IDC_TAGS_TO_REMOVE                  1052
+#define IDC_TAGS_TO_REMOVE                  1053

@@ -16,7 +16,7 @@ namespace
     {
         _Configuration.Read();
 
-        MetaDbIndexClient::Initialize();
+        metadb_index_client_t::Initialize();
     }
 
     FB2K_ON_INIT_STAGE(OnAfterConfigRead, init_stages::after_config_read)

@@ -26,7 +26,7 @@ namespace
         FileOperationCallback & operator=(const FileOperationCallback &) = delete;
         FileOperationCallback & operator=(FileOperationCallback &&) = delete;
 
-        virtual ~FileOperationCallback() { };
+        virtual ~FileOperationCallback() noexcept { };
 
         #pragma region file_operation_callback
 
@@ -54,7 +54,7 @@ namespace
         {
             hash_list_t TracksToRefresh;
 
-            auto Client = MetaDbIndexClient::Instance();
+            auto Client = metadb_index_client_t::Instance();
 
             auto Transaction = statistics_manager_t::GetMetaDbIndexManager()->begin_transaction();
 

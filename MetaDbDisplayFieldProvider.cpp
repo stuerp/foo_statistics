@@ -5,11 +5,10 @@
 
 #include "MetaDbIndexClient.h"
 #include "StatisticsManager.h"
-#include "Resources.h"
-#include "GUIDS.h"
 #include "Tags.h"
 
-#include <SDK/metadb_display_field_provider.h>
+#include <sdk\metadb_display_field_provider.h>
+#include <sdk\titleformat.h>
 
 #pragma hdrstop
 
@@ -39,17 +38,17 @@ namespace
     /// <summary>
     /// Provides our own title-formatting fields that are parsed globally with each call to metadb_handle::format_title methods.
     /// </summary>
-    class MetaDbDisplayFieldProvider : public metadb_display_field_provider_v2
+    class metadb_display_field_provider_t : public metadb_display_field_provider_v2
     {
     public:
-        MetaDbDisplayFieldProvider() { };
+        metadb_display_field_provider_t() { };
 
-        MetaDbDisplayFieldProvider(const MetaDbDisplayFieldProvider &) = delete;
-        MetaDbDisplayFieldProvider(MetaDbDisplayFieldProvider &&) = delete;
-        MetaDbDisplayFieldProvider & operator=(const MetaDbDisplayFieldProvider &) = delete;
-        MetaDbDisplayFieldProvider & operator=(MetaDbDisplayFieldProvider &&) = delete;
+        metadb_display_field_provider_t(const metadb_display_field_provider_t &) = delete;
+        metadb_display_field_provider_t(metadb_display_field_provider_t &&) = delete;
+        metadb_display_field_provider_t & operator=(const metadb_display_field_provider_t &) = delete;
+        metadb_display_field_provider_t & operator=(metadb_display_field_provider_t &&) = delete;
 
-        virtual ~MetaDbDisplayFieldProvider() { };
+        virtual ~metadb_display_field_provider_t() noexcept { };
 
         /// <summary>
         /// Returns the number of fields provided by this implementation.
@@ -76,17 +75,19 @@ namespace
         }
 
         /// <summary>
-        /// Evaluates the specified field with a caller-supplied metadb record to reduce the number of database queries.
+        /// Evaluates the specified field with a caller-supplied metadb record to reduce the number of database queries. Called for each playlist entry.
         /// </summary>
         bool process_field_v2(uint32_t fieldIndex, metadb_handle * hTrack, const metadb_v2::rec_t & record, titleformat_text_out * text) final
         {
+//          console::print(STR_COMPONENT_BASENAME " is getting field \"", FieldNames[fieldIndex], "\" from ", hTrack->get_path(), "...");
+
             if (fieldIndex < 2)
                 return GetTimestamp(fieldIndex, statistics_manager_t::Now(), text, titleformat_inputtypes::unknown);
 
             if (record.info.is_empty())
                 return false;
 
-            const auto Hash = MetaDbIndexClient::Instance()->transform(record.info->info(), hTrack->get_location());
+            const auto Hash = metadb_index_client_t::Instance()->transform(record.info->info(), hTrack->get_location());
 
             const auto Statistics = statistics_manager_t::GetStatistics(Hash);
 
@@ -105,7 +106,7 @@ namespace
                     return GetTimestamp(fieldIndex, Statistics.GetAddedTimestamp(), text);
 
                 case 8:
-                    return GetNumber(Statistics.GetPlaycount(), text);
+                    return GetNumber(Statistics.GetPlayCount(), text);
 
                 case 9:
                     return GetNumber(Statistics.Rating, text);
@@ -120,7 +121,7 @@ namespace
         }
 
     private:
-        bool GetTimestamp(uint32_t fieldIndex, uint64_t timestamp, titleformat_text_out * text, const GUID & inputType = titleformat_inputtypes::meta)
+        bool GetTimestamp(uint32_t fieldIndex, uint64_t timestamp, titleformat_text_out * text, const GUID & inputType = titleformat_inputtypes::meta) const noexcept
         {
             if (timestamp == 0)
                 return false;
@@ -133,7 +134,7 @@ namespace
             return true;
         }
 
-        bool GetNumber(uint32_t value, titleformat_text_out * text)
+        bool GetNumber(uint32_t value, titleformat_text_out * text) const noexcept
         {
             if (value == 0)
                 return false;
@@ -149,5 +150,5 @@ namespace
         static constexpr uint64_t SecondsPerYear  = (uint64_t) (365.25 * SecondsPerDay);
     };
 
-    FB2K_SERVICE_FACTORY(MetaDbDisplayFieldProvider);
+    FB2K_SERVICE_FACTORY(metadb_display_field_provider_t);
 }

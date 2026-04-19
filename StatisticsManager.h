@@ -1,11 +1,10 @@
 
-/** $VER: StatisticsManager.h (2024.07.23) **/
+/** $VER: StatisticsManager.h (2026.03.15) **/
 
 #include "pch.h"
 
 #include <SDK/file_info_impl.h>
 
-#include "Configuration.h"
 #include "Statistics.h"
 
 #pragma once
@@ -33,7 +32,7 @@ public:
     static void Reset(metadb_handle_list_cref hTracks) noexcept;
     static void WriteToTags(metadb_handle_list_cref hTracks) noexcept;
     static void ReadFromTags(metadb_handle_list_cref hTracks) noexcept;
-    static void ImportFromPlayCount(metadb_handle_list_cref hTracks) noexcept;
+    static void ImportFromLegacyTags(metadb_handle_list_cref hTracks) noexcept;
     static void MarkAsPlayed(metadb_handle_list_cref hTracks) noexcept;
 
     static void SetRating(metadb_handle_list_cref hTracks, uint32_t rating) noexcept;
@@ -44,18 +43,5 @@ public:
     static void WriteTrack(const metadb_handle_ptr & hTrack) noexcept;
 
 private:
-    /// <summary>
-    /// Gets a numeric value from a tag.
-    /// </summary>
-    static int64_t GetNumber(file_info_impl & fileInfo, const char * name) noexcept
-    {
-        const char * Value = fileInfo.meta_get(name, 0);
-
-        if (Value == nullptr)
-            return 0;
-
-        int64_t Number = ::_atoi64(Value);
-
-        return (errno != ERANGE) ? Number : 0;
-    }
+    static int64_t GetNumber(file_info_impl & fileInfo, const char * name) noexcept;
 };

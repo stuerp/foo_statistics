@@ -3,11 +3,11 @@
 
 #include "pch.h"
 
-#include <SDK/metadb_callbacks.h>
-
-#include "Configuration.h"
 #include "MetaDbIndexClient.h"
 #include "StatisticsManager.h"
+
+#include <sdk\metadb_callbacks.h>
+#include <sdk\titleformat.h>
 
 #pragma hdrstop
 
@@ -16,17 +16,17 @@ namespace
     /// <summary>
     /// Callback service receiving notifications about user-triggered tag edits.
     /// </summary>
-    class MetadbIOEditCallback : public metadb_io_edit_callback
+    class metadb_io_edit_callback_t : public metadb_io_edit_callback
     {
     public:
-        MetadbIOEditCallback() noexcept { };
+        metadb_io_edit_callback_t() noexcept { };
 
-        MetadbIOEditCallback(const MetadbIOEditCallback &) = delete;
-        MetadbIOEditCallback(MetadbIOEditCallback &&) = delete;
-        MetadbIOEditCallback & operator=(const MetadbIOEditCallback &) = delete;
-        MetadbIOEditCallback & operator=(MetadbIOEditCallback &&) = delete;
+        metadb_io_edit_callback_t(const metadb_io_edit_callback_t &) = delete;
+        metadb_io_edit_callback_t(metadb_io_edit_callback_t &&) = delete;
+        metadb_io_edit_callback_t & operator=(const metadb_io_edit_callback_t &) = delete;
+        metadb_io_edit_callback_t & operator=(metadb_io_edit_callback_t &&) = delete;
 
-        virtual ~MetadbIOEditCallback() { };
+        virtual ~metadb_io_edit_callback_t() noexcept { };
 
         /// <summary>
         ///  Called after the user has edited tags on a set of files.
@@ -35,7 +35,7 @@ namespace
         {
             hash_list_t TracksToRefresh;
 
-            auto Client = MetaDbIndexClient::Instance();
+            auto Client = metadb_index_client_t::Instance();
 
             {
                 auto Transaction = statistics_manager_t::GetMetaDbIndexManager()->begin_transaction();
@@ -68,5 +68,5 @@ namespace
         }
     };
 
-    FB2K_SERVICE_FACTORY(MetadbIOEditCallback);
+    FB2K_SERVICE_FACTORY(metadb_io_edit_callback_t);
 }
