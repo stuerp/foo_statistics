@@ -6,10 +6,10 @@
 #include "Configuration.h"
 #include "Resources.h"
 
-#include <sdk\file.h>
-#include <sdk\system_time_keeper.h>
-#include <sdk\playback_control.h>
-#include <sdk\cfg_var.h>
+#include <SDK\file.h>
+#include <SDK\system_time_keeper.h>
+#include <SDK\playback_control.h>
+#include <SDK\cfg_var.h>
 
 #pragma hdrstop
 

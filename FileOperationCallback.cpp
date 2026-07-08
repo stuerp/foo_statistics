@@ -3,11 +3,12 @@
 
 #include "pch.h"
 
-#include "Configuration.h"
+#include <SDK\titleformat.h>
+#include <SDK\file_operation_callback.h>
+
 #include "MetaDbIndexClient.h"
 #include "StatisticsManager.h"
 
-#include <SDK/file_operation_callback.h>
 
 #pragma hdrstop
 

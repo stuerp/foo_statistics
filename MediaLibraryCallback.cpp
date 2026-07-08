@@ -3,9 +3,9 @@
 
 #include "pch.h"
 
-#include <sdk\library_callbacks.h>
-#include <sdk\titleformat_object.h>
-#include <sdk\search_tools.h>
+#include <SDK\titleformat.h>
+#include <SDK\library_callbacks.h>
+#include <SDK\search_tools.h>
 
 #include <thread>
 

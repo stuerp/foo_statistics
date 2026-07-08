@@ -6,8 +6,8 @@
 #include "MetaDbIndexClient.h"
 #include "StatisticsManager.h"
 
-#include <sdk\metadb_callbacks.h>
-#include <sdk\titleformat.h>
+#include <SDK\metadb_callbacks.h>
+#include <SDK\titleformat_object.h>
 
 #pragma hdrstop
 

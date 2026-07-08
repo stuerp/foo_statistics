@@ -5,8 +5,8 @@
 
 #include "pch.h"
 
-#include <sdk\titleformat.h>
-#include <sdk\file.h>
+#include <SDK\titleformat.h>
+#include <SDK\file.h>
 
 enum RetentionUnit : uint32_t
 {

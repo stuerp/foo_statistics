@@ -29,14 +29,17 @@ Set-PSDebug -Strict; # Equivalent of VBA "Option Explicit".
 
 $ErrorActionPreference = 'Stop';
 
+$Platform = $Platform.ToLower();
+
 Write-Host "Building package `"$TargetName`" for platform `"$Platform`" from `"$PSScriptRoot`"...";
 
 $PackagePath = "..\out\$TargetName";
 
-# Create the package directory (for both x86 and x64): "..\out\TargetName" and "..\out\TargetName\x64".
+# Create the package directory (for x86, x64 and arm64ec): "..\out\TargetName", "..\out\TargetName\x64", "..\out\TargetName\arm64ec".
 Write-Host "Creating directory `"$PackagePath`"...";
 
 $null = New-Item -Path '..\out\' -Name "$TargetName\x64" -ItemType 'directory' -Force;
+$null = New-Item -Path '..\out\' -Name "$TargetName\arm64ec" -ItemType 'directory' -Force;
 
 # Copy the shared x86/x64 files to the package directory.
 Write-Host "Copying shared component files to the package directory...";
@@ -55,7 +58,6 @@ $SharedFiles | ForEach-Object {
     }
 };
 
-# Copy the platform-specific files to the package directory.
 if ($Platform -eq 'x64')
 {
     $PackagePath += '\x64';
@@ -137,6 +139,19 @@ elseif ($Platform -eq 'Win32')
     {
         Write-Host "Failed to install `"$Platform`" component: foobar2000 32-bit directory not found.";
         exit;
+    }
+}
+# Copy the platform-specific files to the package directory.
+elseif ($Platform -eq 'arm64ec')
+{
+    $PackagePath += '\arm64ec';
+
+    # Copy the platform-specific component DLL to the package directory.
+    if (Test-Path -Path "$OutputPath\$TargetFileName")
+    {
+        Write-Host "Copying component `"$TargetFileName`" to `"$PackagePath`"...";
+
+        $null = Copy-Item "$OutputPath\$TargetFileName" -Destination "$PackagePath" -Force;
     }
 }
 else

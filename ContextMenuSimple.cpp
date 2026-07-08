@@ -3,8 +3,8 @@
 
 #include "pch.h"
 
-#include <SDK/contextmenu.h>
-#include <SDK/ui.h>
+#include <SDK\contextmenu.h>
+#include <SDK\ui.h>
 
 #include "Resources.h"
 #include "StatisticsManager.h"

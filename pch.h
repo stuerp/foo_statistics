@@ -1,5 +1,5 @@
 
-/** $VER: pch.h (2026.03.14) P. Stuer **/
+/** $VER: pch.h (2026.05.13) P. Stuer **/
 
 #pragma once
 
@@ -27,15 +27,18 @@
 #include <bit>
 #include <cassert>
 #include <cmath>
+#include <cstring>
+#include <cstdint>
+#include <cstdlib>
 #include <memory>
 #include <ranges>
 #include <set>
 #include <string>
 
-#include <sdk\foobar2000-lite.h>
+#include <SDK\foobar2000-lite.h>
 
-#include <sdk\hasher_md5.h>
-#include <sdk\metadb_index.h>
+#include <SDK\hasher_md5.h>
+#include <SDK\metadb_index.h>
 
 #include <pfc\list.h>
 

@@ -9,7 +9,7 @@
 #include "Resources.h"
 #include "GUIDS.h"
 
-#include <sdk\titleformat.h>
+#include <SDK\titleformat.h>
 
 #pragma hdrstop
 

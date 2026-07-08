@@ -1,5 +1,5 @@
 
-/** $VER: TrackPropertyProvider.cpp (2024.07.17) **/
+/** $VER: TrackPropertyProvider.cpp (2026.05.13) **/
 
 #include "pch.h"
 
@@ -7,7 +7,7 @@
 #include "StatisticsManager.h"
 #include "Resources.h"
 
-#include <sdk\track_property.h>
+#include <SDK\track_property.h>
 
 #pragma hdrstop
 

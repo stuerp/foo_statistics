@@ -3,14 +3,12 @@
 
 #include "pch.h"
 
-#include <sdk\playback_control.h>
-#include <sdk\play_callback.h>
+#include <SDK\playback_control.h>
+#include <SDK\play_callback.h>
 //#include <SDK/titleformat.h>
 
 #include "Configuration.h"
 #include "StatisticsManager.h"
-
-#include <math.h>
 
 #include <queue>
 

@@ -7,8 +7,8 @@
 #include "StatisticsManager.h"
 #include "Tags.h"
 
-#include <sdk\metadb_display_field_provider.h>
-#include <sdk\titleformat.h>
+#include <SDK\metadb_display_field_provider.h>
+#include <SDK\titleformat.h>
 
 #pragma hdrstop
 

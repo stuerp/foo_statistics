@@ -1,5 +1,5 @@
 
-/** $VER: StatisticsManager.cpp (2026.04.18) **/
+/** $VER: StatisticsManager.cpp (2026.05.13) **/
 
 #include "pch.h"
 
@@ -9,11 +9,12 @@
 #include "Configuration.h"
 #include "GUIDS.h"
 #include "MetaDbIndexClient.h"
+#include "Statistics.h"
 #include "Tags.h"
 
-#include <sdk\input.h>
-#include <sdk\file_lock_manager.h>
-#include <sdk\file_info_impl.h>
+#include <SDK\input.h>
+#include <SDK\file_lock_manager.h>
+#include <SDK\file_info_impl.h>
 
 #include <pfc\filetimetools.h>
 
@@ -208,7 +209,7 @@ void statistics_manager_t::WriteToTags(metadb_handle_list_cref hTracks) noexcept
                                         console::print(STR_COMPONENT_BASENAME, " added legacy tag " TagFirstPlayedTimestampLegacy ".");
                                     }
 
-                                    if (!FileInfo.meta_exists_ex(TagLastPlayedTimestampLegacy, std::strlen(TagLastPlayedTimestampLegacy)) && (Statistics.Timestamps.size() > 2))
+                                    if (!FileInfo.meta_exists_ex(TagLastPlayedTimestampLegacy, std::strlen(TagLastPlayedTimestampLegacy)) && (Statistics.Timestamps.size() > 1))
                                     {
                                         FileInfo.meta_set(TagLastPlayedTimestampLegacy, pfc::format_uint(Statistics.Timestamps.back()));
 
